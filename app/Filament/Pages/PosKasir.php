@@ -15,7 +15,7 @@ use UnitEnum;
 
 class PosKasir extends Page
 {
-    protected static string $view = 'filament.pages.pos-kasir';
+    protected string $view = 'filament.pages.pos-kasir';
 
     protected static ?string $navigationLabel = 'Kasir POS';
     protected static ?string $title = 'Kasir POS';
