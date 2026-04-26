@@ -1,7 +1,5 @@
 <x-filament-panels::page>
-    @push('styles')
-        <link rel="stylesheet" href="{{ asset('css/pos.css') }}">
-    @endpush
+    <link rel="stylesheet" href="{{ asset('css/pos.css') }}">
 
     <div class="pos-layout">
 
