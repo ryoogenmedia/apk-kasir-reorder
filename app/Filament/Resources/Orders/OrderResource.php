@@ -18,6 +18,11 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
+    protected static ?string $navigationLabel = 'Transaksi Penjualan';
+    protected static ?string $pluralLabel = 'Penjualan';
+    protected static ?string $modelLabel = 'Penjualan';
+    protected static ?string $navigationGroup = 'Kasir';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'id';

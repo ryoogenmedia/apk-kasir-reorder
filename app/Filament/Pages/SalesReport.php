@@ -10,6 +10,10 @@ class SalesReport extends Page
 {
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-document-chart-bar';
 
+    protected static ?string $navigationLabel = 'Laporan Penjualan';
+
+    protected static ?string $title = 'Laporan Penjualan';
+
     protected string $view = 'filament.pages.sales-report';
 
     protected static string | UnitEnum | null $navigationGroup = 'Laporan';

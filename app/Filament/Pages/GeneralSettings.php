@@ -19,9 +19,13 @@ class GeneralSettings extends Page implements HasForms
     use InteractsWithForms;
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
+    protected static ?string $navigationLabel = 'Pengaturan Umum';
+
+    protected static ?string $title = 'Pengaturan Umum';
+
     protected string $view = 'filament.pages.general-settings';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Settings';
+    protected static string | UnitEnum | null $navigationGroup = 'Pengaturan';
 
     public ?array $data = [];
 

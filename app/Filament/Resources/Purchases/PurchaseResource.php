@@ -18,6 +18,11 @@ class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
 
+    protected static ?string $navigationLabel = 'Pembelian Stok';
+    protected static ?string $pluralLabel = 'Pembelian';
+    protected static ?string $modelLabel = 'Pembelian';
+    protected static ?string $navigationGroup = 'Manajemen Stok';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'id';

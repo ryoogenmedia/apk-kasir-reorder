@@ -18,6 +18,11 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
+    protected static ?string $navigationLabel = 'Kategori';
+    protected static ?string $pluralLabel = 'Kategori';
+    protected static ?string $modelLabel = 'Kategori';
+    protected static ?string $navigationGroup = 'Manajemen Produk';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';

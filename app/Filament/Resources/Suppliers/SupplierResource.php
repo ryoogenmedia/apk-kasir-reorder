@@ -18,6 +18,11 @@ class SupplierResource extends Resource
 {
     protected static ?string $model = Supplier::class;
 
+    protected static ?string $navigationLabel = 'Supplier';
+    protected static ?string $pluralLabel = 'Supplier';
+    protected static ?string $modelLabel = 'Supplier';
+    protected static ?string $navigationGroup = 'Manajemen Stok';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
