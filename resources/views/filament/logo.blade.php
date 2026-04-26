@@ -5,7 +5,7 @@
 
 @if ($logoUrl)
     <div class="flex justify-center w-full py-2">
-        <img src="{{ $logoUrl }}" alt="Logo" class="h-10 w-auto max-w-full object-contain">
+        <img src="{{ $logoUrl }}" alt="Logo" class="h-20 ms-10 w-auto max-w-full object-contain" style="width: auto; height: 30px;">
     </div>
 @else
     <div class="flex justify-center w-full py-2">
