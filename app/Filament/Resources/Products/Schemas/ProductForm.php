@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
@@ -12,13 +14,21 @@ class ProductForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('category_id')
+                Select::make('category_id')
                     ->label('Kategori')
                     ->relationship('category', 'name')
                     ->required(),
                 TextInput::make('name')
                     ->label('Nama Produk')
-                    ->required(),
+                    ->required()
+                    ->columnSpan(1),
+                FileUpload::make('image')
+                    ->label('Gambar Produk')
+                    ->image()
+                    ->directory('products')
+                    ->disk('public')
+                    ->imagePreviewHeight('120')
+                    ->columnSpanFull(),
                 Textarea::make('description')
                     ->label('Deskripsi')
                     ->columnSpanFull(),
