@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PurchaseResource extends Resource
 {
@@ -21,7 +22,7 @@ class PurchaseResource extends Resource
     protected static ?string $navigationLabel = 'Pembelian Stok';
     protected static ?string $pluralLabel = 'Pembelian';
     protected static ?string $modelLabel = 'Pembelian';
-    protected static ?string $navigationGroup = 'Manajemen Stok';
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen Stok';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
