@@ -15,11 +15,11 @@ class PurchasesTable
         return $table
             ->columns([
                 TextColumn::make('supplier.name')
-                    ->label('Supplier')
+                    ->label('Pemasok')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('user.name')
-                    ->label('Buyer')
+                    ->label('Penanggung Jawab')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('purchase_date')
