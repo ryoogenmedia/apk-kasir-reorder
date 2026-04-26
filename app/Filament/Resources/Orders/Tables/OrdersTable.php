@@ -15,7 +15,7 @@ class OrdersTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
-                    ->label('Cashier')
+                    ->label('Kasir')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('order_date')
