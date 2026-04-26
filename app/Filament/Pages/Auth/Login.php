@@ -17,6 +17,21 @@ class Login extends BaseLogin
     public function getAuthenticateFormAction(): Action
     {
         return parent::getAuthenticateFormAction()
-            ->label('Masuk'); // Ubah teks tombol menjadi "Masuk"
+            ->label('Masuk')
+            ->fullWidth(); // Pastikan tombol penuh
+    }
+
+    protected function getEmailFormComponent(): \Filament\Schemas\Components\Component
+    {
+        return parent::getEmailFormComponent()
+            ->label('Alamat Email')
+            ->prefixIcon('heroicon-m-envelope');
+    }
+
+    protected function getPasswordFormComponent(): \Filament\Schemas\Components\Component
+    {
+        return parent::getPasswordFormComponent()
+            ->label('Kata Sandi')
+            ->prefixIcon('heroicon-m-lock-closed');
     }
 }
