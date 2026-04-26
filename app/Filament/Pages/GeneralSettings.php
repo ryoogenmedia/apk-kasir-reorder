@@ -6,14 +6,17 @@ use Filament\Pages\Page;
 use App\Models\Setting;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
 use UnitEnum;
 use BackedEnum;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Concerns\InteractsWithForms;
 
-class GeneralSettings extends Page
+class GeneralSettings extends Page implements HasForms
 {
+    use InteractsWithForms;
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected string $view = 'filament.pages.general-settings';
@@ -35,7 +38,7 @@ class GeneralSettings extends Page
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         return $form
             ->schema([
