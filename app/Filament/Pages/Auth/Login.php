@@ -17,8 +17,7 @@ class Login extends BaseLogin
     public function getAuthenticateFormAction(): Action
     {
         return parent::getAuthenticateFormAction()
-            ->label('Masuk')
-            ->fullWidth(); // Pastikan tombol penuh
+            ->label('Masuk');
     }
 
     protected function getEmailFormComponent(): \Filament\Schemas\Components\Component
