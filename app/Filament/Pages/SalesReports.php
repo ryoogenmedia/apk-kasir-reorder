@@ -19,10 +19,10 @@ class SalesReports extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
     protected static ?string $title = 'Laporan Penjualan';
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.pages.sales-reports';
