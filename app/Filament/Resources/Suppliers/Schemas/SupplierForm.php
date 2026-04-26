@@ -13,14 +13,18 @@ class SupplierForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama Supplier')
                     ->required(),
-                TextInput::make('contact_name'),
+                TextInput::make('contact_name')
+                    ->label('Nama Kontak'),
                 TextInput::make('phone')
+                    ->label('No. Telepon')
                     ->tel(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Alamat Email')
                     ->email(),
                 Textarea::make('address')
+                    ->label('Alamat')
                     ->columnSpanFull(),
             ]);
     }
