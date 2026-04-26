@@ -13,8 +13,10 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama Kategori')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Deskripsi')
                     ->columnSpanFull(),
             ]);
     }
