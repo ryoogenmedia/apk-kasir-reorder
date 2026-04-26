@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Order;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
