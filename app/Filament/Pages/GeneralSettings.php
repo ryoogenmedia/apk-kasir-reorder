@@ -9,14 +9,16 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use UnitEnum;
+use BackedEnum;
 
 class GeneralSettings extends Page
 {
-    protected static $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected $view = 'filament.pages.general-settings';
+    protected string $view = 'filament.pages.general-settings';
 
-    protected static $navigationGroup = 'Settings';
+    protected static string | UnitEnum | null $navigationGroup = 'Settings';
 
     public ?array $data = [];
 

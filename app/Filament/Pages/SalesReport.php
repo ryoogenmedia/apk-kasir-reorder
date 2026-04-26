@@ -3,14 +3,16 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
+use UnitEnum;
+use BackedEnum;
 
 class SalesReport extends Page
 {
-    protected static $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-document-chart-bar';
 
-    protected $view = 'filament.pages.sales-report';
+    protected string $view = 'filament.pages.sales-report';
 
-    protected static $navigationGroup = 'Laporan';
+    protected static string | UnitEnum | null $navigationGroup = 'Laporan';
 
     public static function canAccess(): bool
     {
