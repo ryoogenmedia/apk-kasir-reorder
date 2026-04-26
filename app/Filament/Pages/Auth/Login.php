@@ -7,6 +7,8 @@ use Filament\Actions\Action;
 
 class Login extends BaseLogin
 {
+    protected string $view = 'filament.auth.login';
+
     public function getHeading(): string
     {
         return ''; // Sembunyikan tulisan "Sign in"
