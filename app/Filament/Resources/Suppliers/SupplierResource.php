@@ -24,7 +24,7 @@ class SupplierResource extends Resource
     protected static ?string $modelLabel = 'Supplier';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Stok';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
     protected static ?string $recordTitleAttribute = 'name';
 

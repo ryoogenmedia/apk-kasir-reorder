@@ -24,7 +24,7 @@ class OrderResource extends Resource
     protected static ?string $modelLabel = 'Penjualan';
     protected static string|UnitEnum|null $navigationGroup = 'Kasir';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     protected static ?string $recordTitleAttribute = 'id';
 

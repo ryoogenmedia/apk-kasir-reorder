@@ -24,7 +24,7 @@ class PurchaseResource extends Resource
     protected static ?string $modelLabel = 'Pembelian';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Stok';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     protected static ?string $recordTitleAttribute = 'id';
 
