@@ -27,16 +27,19 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        $logo = Setting::where('key', 'site_logo')->first()?->value;
-        $logoUrl = $logo ? Storage::url($logo) : null;
+        $settings = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key');
+        $logoUrl = $settings->get('site_logo') ? Storage::disk('public')->url($settings->get('site_logo')) : null;
+        $faviconUrl = $settings->get('site_favicon') ? Storage::disk('public')->url($settings->get('site_favicon')) : null;
+        $siteName = $settings->get('site_name') ?? 'POS Kasir';
 
         return $panel
             ->default()
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('POS Kasir')
+            ->brandName($siteName)
             ->brandLogo($logoUrl)
+            ->favicon($faviconUrl)
             ->darkMode(false)
             ->colors([
                 'primary' => Color::Blue,

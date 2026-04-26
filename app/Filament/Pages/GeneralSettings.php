@@ -38,6 +38,7 @@ class GeneralSettings extends Page implements HasForms
     {
         $this->form->fill([
             'site_logo' => Setting::where('key', 'site_logo')->first()?->value,
+            'site_favicon' => Setting::where('key', 'site_favicon')->first()?->value,
             'site_name' => Setting::where('key', 'site_name')->first()?->value ?? 'POS Kasir',
         ]);
     }
@@ -49,11 +50,17 @@ class GeneralSettings extends Page implements HasForms
                 \Filament\Schemas\Components\Section::make('Branding')
                     ->schema([
                         FileUpload::make('site_logo')
-                            ->label('Site Logo')
+                            ->label('Logo Aplikasi')
                             ->image()
-                            ->directory('branding'),
+                            ->directory('branding')
+                            ->disk('public'),
+                        FileUpload::make('site_favicon')
+                            ->label('Favicon (Icon Browser)')
+                            ->image()
+                            ->directory('branding')
+                            ->disk('public'),
                         TextInput::make('site_name')
-                            ->label('Site Name')
+                            ->label('Nama Aplikasi')
                             ->required(),
                     ])
             ])
