@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('supplier_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->date('purchase_date');
+            $table->decimal('total_amount', 15, 2)->default(0);
+            $table->string('status')->default('completed'); // pending, completed, etc.
             $table->timestamps();
         });
     }
