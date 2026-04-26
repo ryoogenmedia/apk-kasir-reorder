@@ -14,28 +14,31 @@ class PurchasesTable
     {
         return $table
             ->columns([
-                TextColumn::make('supplier_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('supplier.name')
+                    ->label('Supplier')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('user.name')
+                    ->label('Buyer')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('purchase_date')
+                    ->label('Tanggal')
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_amount')
-                    ->numeric()
+                    ->label('Total')
+                    ->money('IDR')
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'completed' => 'success',
+                        'pending' => 'warning',
+                        default => 'gray',
+                    })
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

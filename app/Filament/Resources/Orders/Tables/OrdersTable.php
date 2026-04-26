@@ -14,27 +14,31 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('Cashier')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('order_date')
+                    ->label('Tanggal')
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_amount')
-                    ->numeric()
+                    ->label('Total')
+                    ->money('IDR')
                     ->sortable(),
                 TextColumn::make('payment_method')
+                    ->label('Metode Bayar')
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'completed' => 'success',
+                        'pending' => 'warning',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    })
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
