@@ -47,9 +47,17 @@
     </div>
 
     <style>
-        /* Sembunyikan elemen bawaan filament yang mungkin muncul */
-        .fi-simple-header, .fi-simple-main-ctn { display: none !important; }
+        /* Sembunyikan header bawaan Filament */
+        .fi-simple-header { display: none !important; }
         
+        /* Buat container utama Filament menjadi transparan agar desain kita terlihat bersih */
+        .fi-simple-main {
+            background-color: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+
         /* Pastikan background mencakup seluruh layar */
         body {
             background-color: #f9fafb !important;
