@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile()
             ->brandName($siteName)
             ->brandLogo(fn () => view('filament.logo'))
             ->favicon($faviconUrl)
