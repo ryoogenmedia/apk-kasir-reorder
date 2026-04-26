@@ -6,7 +6,7 @@ use Filament\Pages\Page;
 
 class SalesReport extends Page
 {
-    protected static string | \UnitEnum | null $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected string $view = 'filament.pages.sales-report';
 
