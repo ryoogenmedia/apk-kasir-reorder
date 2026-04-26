@@ -14,13 +14,28 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $cashier = Role::firstOrCreate(['name' => 'cashier', 'guard_name' => 'web']);
 
-        $user = User::firstOrCreate([
+        $superAdminUser = User::firstOrCreate([
             'email' => 'superadmin@example.com',
         ], [
             'name' => 'Super Admin',
             'password' => bcrypt('password'),
         ]);
+        $superAdminUser->assignRole($superAdmin);
 
-        $user->assignRole($superAdmin);
+        $adminUser = User::firstOrCreate([
+            'email' => 'admin@example.com',
+        ], [
+            'name' => 'Admin User',
+            'password' => bcrypt('password'),
+        ]);
+        $adminUser->assignRole($admin);
+
+        $cashierUser = User::firstOrCreate([
+            'email' => 'cashier@example.com',
+        ], [
+            'name' => 'Cashier User',
+            'password' => bcrypt('password'),
+        ]);
+        $cashierUser->assignRole($cashier);
     }
 }
