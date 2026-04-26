@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use BackedEnum;
 use UnitEnum;
 
 class PosKasir extends Page
@@ -19,7 +20,7 @@ class PosKasir extends Page
     protected static ?string $navigationLabel = 'Kasir POS';
     protected static ?string $title = 'Kasir POS';
     protected static string|UnitEnum|null $navigationGroup = 'Kasir';
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?int $navigationSort = 1;
 
     // Keranjang belanja: [product_id => [name, price, qty, subtotal, image]]
