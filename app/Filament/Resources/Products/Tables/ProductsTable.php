@@ -14,18 +14,23 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('category.name')
+                    ->label('Kategori')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('name')
+                    ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->label('Harga')
+                    ->money('IDR')
                     ->sortable(),
                 TextColumn::make('stock')
+                    ->label('Stok')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('low_stock_threshold')
+                    ->label('Batas Stok')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

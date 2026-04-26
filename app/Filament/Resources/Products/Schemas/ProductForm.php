@@ -12,22 +12,28 @@ class ProductForm
     {
         return $schema
             ->components([
-                TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
+                \Filament\Forms\Components\Select::make('category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name')
+                    ->required(),
                 TextInput::make('name')
+                    ->label('Nama Produk')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Deskripsi')
                     ->columnSpanFull(),
                 TextInput::make('price')
+                    ->label('Harga')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('Rp'),
                 TextInput::make('stock')
+                    ->label('Stok')
                     ->required()
                     ->numeric()
                     ->default(0),
                 TextInput::make('low_stock_threshold')
+                    ->label('Batas Stok Minimum')
                     ->required()
                     ->numeric()
                     ->default(5),
