@@ -14,10 +14,13 @@ use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 
-class SalesReports extends Page implements HasTable
+class SalesReports extends Page implements HasTable, HasForms
 {
     use InteractsWithTable;
+    use InteractsWithForms;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
@@ -27,13 +30,37 @@ class SalesReports extends Page implements HasTable
 
     protected string $view = 'filament.pages.sales-reports';
 
-    public ?string $startDate = null;
-    public ?string $endDate = null;
+    public ?array $data = [];
 
     public function mount(): void
     {
-        $this->startDate = now()->startOfMonth()->toDateString();
-        $this->endDate = now()->toDateString();
+        $this->form->fill([
+            'startDate' => now()->startOfMonth()->format('Y-m-d'),
+            'endDate' => now()->format('Y-m-d'),
+        ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Filter Laporan')
+                    ->description('Pilih rentang tanggal untuk menyaring data penjualan')
+                    ->schema([
+                        DatePicker::make('startDate')
+                            ->label('Tanggal Mulai')
+                            ->default(now()->startOfMonth())
+                            ->live()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
+                        DatePicker::make('endDate')
+                            ->label('Tanggal Selesai')
+                            ->default(now())
+                            ->live()
+                            ->afterStateUpdated(fn () => $this->resetTable()),
+                    ])
+                    ->columns(2),
+            ])
+            ->statePath('data');
     }
 
     public function table(Table $table): Table
@@ -41,20 +68,20 @@ class SalesReports extends Page implements HasTable
         return $table
             ->query(
                 Order::query()
-                    ->when($this->startDate, fn($q) => $q->whereDate('order_date', '>=', $this->startDate))
-                    ->when($this->endDate, fn($q) => $q->whereDate('order_date', '<=', $this->endDate))
+                    ->when($this->data['startDate'] ?? null, fn($q) => $q->whereDate('order_date', '>=', $this->data['startDate']))
+                    ->when($this->data['endDate'] ?? null, fn($q) => $q->whereDate('order_date', '<=', $this->data['endDate']))
                     ->orderBy('order_date', 'desc')
             )
             ->columns([
                 TextColumn::make('order_date')
                     ->label('Tanggal')
-                    ->date('d/m/Y')
+                    ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Kasir')
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('payment_method')
-                    ->label('Metode Bayar')
+                    ->label('Metode')
                     ->badge()
                     ->formatStateUsing(fn ($state) => ucfirst($state)),
                 TextColumn::make('status')
@@ -69,40 +96,54 @@ class SalesReports extends Page implements HasTable
                 TextColumn::make('total_amount')
                     ->label('Total')
                     ->money('IDR')
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->money('IDR'))
+                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('Total')->money('IDR'))
                     ->alignRight(),
             ])
+            ->actions([])
+            ->bulkActions([])
             ->headerActions([
                 Action::make('cetak_pdf')
-                    ->label('Cetak PDF')
+                    ->label('Cetak Laporan (PDF)')
                     ->icon('heroicon-o-printer')
                     ->color('danger')
                     ->action(fn () => $this->printPdf()),
-            ])
-            ->filters([
-                // Filter ditangani oleh mount() dan form di view jika manual, 
-                // tapi di sini kita pakai headerActions untuk Cetak.
             ]);
+    }
+
+    public function getStats(): array
+    {
+        $query = Order::query()
+            ->when($this->data['startDate'] ?? null, fn($q) => $q->whereDate('order_date', '>=', $this->data['startDate']))
+            ->when($this->data['endDate'] ?? null, fn($q) => $q->whereDate('order_date', '<=', $this->data['endDate']));
+
+        return [
+            'total_sales' => $query->sum('total_amount'),
+            'transaction_count' => $query->count(),
+            'avg_transaction' => $query->avg('total_amount') ?? 0,
+        ];
     }
 
     public function printPdf()
     {
+        $startDate = $this->data['startDate'];
+        $endDate = $this->data['endDate'];
+
         $orders = Order::query()
-            ->when($this->startDate, fn($q) => $q->whereDate('order_date', '>=', $this->startDate))
-            ->when($this->endDate, fn($q) => $q->whereDate('order_date', '<=', $this->endDate))
+            ->when($startDate, fn($q) => $q->whereDate('order_date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('order_date', '<=', $endDate))
             ->with('user')
             ->orderBy('order_date', 'asc')
             ->get();
 
         $pdf = Pdf::loadView('reports.sales-pdf', [
             'orders' => $orders,
-            'startDate' => Carbon::parse($this->startDate)->format('d/m/Y'),
-            'endDate' => Carbon::parse($this->endDate)->format('d/m/Y'),
+            'startDate' => Carbon::parse($startDate)->format('d/m/Y'),
+            'endDate' => Carbon::parse($endDate)->format('d/m/Y'),
         ]);
 
         return response()->streamDownload(
             fn () => print($pdf->output()),
-            "Laporan_Penjualan_{$this->startDate}_to_{$this->endDate}.pdf"
+            "Laporan_Penjualan_{$startDate}_to_{$endDate}.pdf"
         );
     }
 }
