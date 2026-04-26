@@ -6,11 +6,11 @@ use Filament\Pages\Page;
 
 class SalesReport extends Page
 {
-    protected static $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string | \UnitEnum | null $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected string $view = 'filament.pages.sales-report';
 
-    protected static $navigationGroup = 'Laporan';
+    protected static string | \UnitEnum | null $navigationGroup = 'Laporan';
 
     public static function canAccess(): bool
     {
