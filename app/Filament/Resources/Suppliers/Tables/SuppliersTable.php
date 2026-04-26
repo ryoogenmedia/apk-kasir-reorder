@@ -15,13 +15,16 @@ class SuppliersTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama Supplier')
                     ->searchable(),
                 TextColumn::make('contact_name')
+                    ->label('Nama Kontak')
                     ->searchable(),
                 TextColumn::make('phone')
+                    ->label('No. Telepon')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label('Alamat Email')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
