@@ -17,24 +17,27 @@ class OrderForm
     {
         return $schema
             ->components([
-                Section::make('Order Information')
+                Section::make('Informasi Penjualan')
                     ->schema([
                         Select::make('user_id')
-                            ->label('Cashier')
+                            ->label('Kasir')
                             ->options(User::all()->pluck('name', 'id'))
                             ->default(auth()->id())
                             ->required(),
                         DatePicker::make('order_date')
+                            ->label('Tanggal Penjualan')
                             ->default(now())
                             ->required(),
                         TextInput::make('payment_method')
+                            ->label('Metode Pembayaran')
                             ->required()
                             ->default('cash'),
                         TextInput::make('status')
+                            ->label('Status')
                             ->required()
                             ->default('completed'),
                         TextInput::make('total_amount')
-                            ->label('Grand Total')
+                            ->label('Total Akhir')
                             ->required()
                             ->numeric()
                             ->prefix('Rp')
@@ -42,30 +45,34 @@ class OrderForm
                             ->readonly(),
                     ])->columns(2),
 
-                Section::make('Order Items')
+                Section::make('Item Penjualan')
                     ->schema([
                         Repeater::make('items')
+                            ->label('Daftar Produk')
                             ->relationship('items')
                             ->schema([
                                 Select::make('product_id')
-                                    ->label('Product')
+                                    ->label('Produk')
                                     ->relationship('product', 'name')
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->price ?? 0)),
                                 TextInput::make('quantity')
+                                    ->label('Jumlah')
                                     ->numeric()
                                     ->default(1)
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(fn ($state, $get, $set) => $set('subtotal', $state * $get('unit_price'))),
                                 TextInput::make('unit_price')
+                                    ->label('Harga Satuan')
                                     ->numeric()
                                     ->prefix('Rp')
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(fn ($state, $get, $set) => $set('subtotal', $state * $get('quantity'))),
                                 TextInput::make('subtotal')
+                                    ->label('Subtotal')
                                     ->numeric()
                                     ->prefix('Rp')
                                     ->readonly()
