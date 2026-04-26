@@ -15,6 +15,12 @@ class ProductsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->height(50)
+                    ->width(50)
+                    ->rounded(),
                 TextColumn::make('category.name')
                     ->label('Kategori')
                     ->sortable()
