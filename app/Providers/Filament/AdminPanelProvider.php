@@ -15,7 +15,7 @@ use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -27,7 +27,12 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        $settings = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key');
+        try {
+            $settings = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key');
+        } catch (\Exception $e) {
+            $settings = collect();
+        }
+
         $logoUrl = $settings->get('site_logo') ? Storage::disk('public')->url($settings->get('site_logo')) : null;
         $faviconUrl = $settings->get('site_favicon') ? Storage::disk('public')->url($settings->get('site_favicon')) : null;
         $siteName = $settings->get('site_name') ?? 'POS Kasir';
@@ -60,7 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                PreventRequestForgery::class,
+                VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
