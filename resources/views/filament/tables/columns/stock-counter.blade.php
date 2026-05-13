@@ -1,27 +1,85 @@
-<div class="flex items-center justify-center gap-3">
+<div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
     <button 
+        type="button"
         wire:click="decrementStock('{{ $getRecord()->id }}')"
-        class="w-9 h-9 rounded-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors duration-150 shadow-sm"
+        style="
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+            transition: all 0.15s ease;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+        "
+        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(239,68,68,0.5)'"
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(239,68,68,0.35)'"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-        </svg>
+        −
     </button>
     
     <input 
         type="number" 
+        inputmode="numeric"
         wire:change="updateStock('{{ $getRecord()->id }}', $event.target.value)"
         value="{{ $getState() }}"
         min="0"
-        class="w-24 h-9 text-center border border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-sm font-medium text-gray-900 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style="
+            width: 80px;
+            height: 38px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            background: #f8fafc;
+            outline: none;
+            transition: all 0.15s ease;
+            -moz-appearance: textfield;
+        "
+        onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; this.style.background='#ffffff'"
+        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'; this.style.background='#f8fafc'"
     >
     
     <button 
+        type="button"
         wire:click="incrementStock('{{ $getRecord()->id }}')"
-        class="w-9 h-9 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors duration-150 shadow-sm"
+        style="
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+            transition: all 0.15s ease;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+        "
+        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(16,185,129,0.5)'"
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(16,185,129,0.35)'"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
+        +
     </button>
 </div>
+
+<style>
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+</style>

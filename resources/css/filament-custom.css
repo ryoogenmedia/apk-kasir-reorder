@@ -1,0 +1,234 @@
+/* ===== SIDEBAR STYLING ===== */
+
+/* Sidebar background: deep indigo gradient */
+.fi-sidebar {
+    background: linear-gradient(180deg, #312e81 0%, #1e1b4b 100%) !important;
+}
+
+/* Sidebar header/brand area */
+.fi-sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make ALL text inside sidebar white/light */
+.fi-sidebar * {
+    --tw-text-opacity: 1 !important;
+}
+
+/* Navigation group labels (PENGATURAN, LAPORAN, etc.) */
+.fi-sidebar-group > button > span,
+.fi-sidebar-group-label,
+.fi-sidebar [class*="group"] > button span {
+    color: rgba(165, 180, 252, 0.8) !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+}
+
+/* Group collapse chevron icons */
+.fi-sidebar-group > button svg,
+.fi-sidebar [class*="group"] > button > svg {
+    color: rgba(165, 180, 252, 0.6) !important;
+}
+
+/* All navigation item links & buttons - FORCE white text */
+.fi-sidebar-item a,
+.fi-sidebar-item button,
+.fi-sidebar-item a span,
+.fi-sidebar-item button span,
+.fi-sidebar-nav .fi-sidebar-item a,
+.fi-sidebar-nav .fi-sidebar-item button {
+    color: rgba(224, 231, 255, 0.9) !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Navigation item icons */
+.fi-sidebar-item a svg,
+.fi-sidebar-item button svg,
+.fi-sidebar-item-icon {
+    color: rgba(199, 210, 254, 0.75) !important;
+    transition: color 0.2s ease !important;
+}
+
+/* Hover state */
+.fi-sidebar-item a:hover,
+.fi-sidebar-item button:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.fi-sidebar-item a:hover span,
+.fi-sidebar-item button:hover span {
+    color: #ffffff !important;
+}
+
+.fi-sidebar-item a:hover svg,
+.fi-sidebar-item button:hover svg {
+    color: #c7d2fe !important;
+}
+
+/* Active navigation item */
+.fi-sidebar-item.fi-active > a,
+.fi-sidebar-item.fi-active > button,
+.fi-sidebar-item[data-active] > a,
+.fi-sidebar-item[data-active] > button {
+    background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%) !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+}
+
+.fi-sidebar-item.fi-active a span,
+.fi-sidebar-item.fi-active button span,
+.fi-sidebar-item.fi-active a svg,
+.fi-sidebar-item.fi-active button svg,
+.fi-sidebar-item[data-active] a span,
+.fi-sidebar-item[data-active] a svg {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Logo/brand text in sidebar */
+.fi-sidebar-header a,
+.fi-sidebar-header span,
+.fi-sidebar-header a span,
+.fi-sidebar .fi-logo,
+.fi-sidebar .fi-logo * {
+    color: #e0e7ff !important;
+}
+
+/* Dividers */
+.fi-sidebar hr {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Sidebar scrollbar */
+.fi-sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+.fi-sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+.fi-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(165, 180, 252, 0.25);
+    border-radius: 20px;
+}
+
+/* Sidebar close/toggle button */
+.fi-sidebar-close-button,
+.fi-sidebar-close-button svg {
+    color: rgba(224, 231, 255, 0.8) !important;
+}
+
+/* ===== TOPBAR / NAVBAR STYLING ===== */
+.fi-topbar nav {
+    background: linear-gradient(135deg, #312e81 0%, #4338ca 100%) !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 10px rgba(49, 46, 129, 0.3) !important;
+}
+
+/* Topbar text & icons */
+.fi-topbar nav *,
+.fi-topbar a,
+.fi-topbar button {
+    --tw-text-opacity: 1;
+}
+
+/* Brand name in topbar */
+.fi-topbar .fi-logo,
+.fi-topbar .fi-logo *,
+.fi-topbar nav > div > a,
+.fi-topbar nav > div > a * {
+    color: #e0e7ff !important;
+}
+
+/* Topbar icons (search, user avatar border) */
+.fi-topbar nav svg {
+    color: rgba(199, 210, 254, 0.85) !important;
+}
+
+/* Search bar in topbar */
+.fi-global-search-field input,
+.fi-topbar input[type="search"],
+.fi-topbar input[type="text"] {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #e0e7ff !important;
+    border-radius: 0.5rem !important;
+}
+
+.fi-global-search-field input::placeholder,
+.fi-topbar input::placeholder {
+    color: rgba(199, 210, 254, 0.5) !important;
+}
+
+.fi-global-search-field input:focus,
+.fi-topbar input:focus {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(165, 180, 252, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Sidebar toggle button in topbar */
+.fi-topbar .fi-sidebar-open-button,
+.fi-topbar .fi-sidebar-close-button {
+    color: rgba(224, 231, 255, 0.85) !important;
+}
+
+/* User menu button in topbar */
+.fi-topbar .fi-user-menu-button,
+.fi-topbar .fi-avatar {
+    border-color: rgba(165, 180, 252, 0.4) !important;
+}
+
+/* ===== REALTIME CLOCK ===== */
+.fi-realtime-clock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.5rem;
+    color: #e0e7ff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: 'Inter', monospace;
+    white-space: nowrap;
+}
+
+.fi-realtime-clock .clock-icon {
+    color: #a5b4fc;
+}
+
+.fi-realtime-clock .clock-day {
+    color: #a5b4fc;
+    font-weight: 600;
+}
+
+.fi-realtime-clock .clock-time {
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ===== STAT CARD ENHANCEMENTS ===== */
+.fi-wi-stats-overview-stat {
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ===== CHART CARD ENHANCEMENTS ===== */
+.fi-wi-chart {
+    transition: box-shadow 0.15s ease !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-wi-chart:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}

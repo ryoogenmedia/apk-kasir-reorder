@@ -7,12 +7,15 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Support\HtmlString;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -55,6 +58,22 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Amber,
             ])
+            ->font('Inter')
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->navigationGroups([
+                NavigationGroup::make('Manajemen Produk'),
+                NavigationGroup::make('Penjualan'),
+                NavigationGroup::make('Settings')
+                    ->collapsed(),
+            ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => new HtmlString('<style>' . file_get_contents(resource_path('css/filament-custom.css')) . '</style>'),
+            )
+            ->renderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
+                fn () => new HtmlString(view('filament.components.realtime-clock')->render()),
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
