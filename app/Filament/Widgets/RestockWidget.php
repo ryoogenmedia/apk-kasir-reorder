@@ -62,22 +62,24 @@ class RestockWidget extends TableWidget
 
     public function incrementStock($recordId)
     {
-        $product = Product::select(['id', 'name', 'stock'])->find($recordId);
-        if ($product) {
-            $product->increment('stock');
+        // Update langsung di DB (Atomic)
+        \Illuminate\Support\Facades\DB::table('products')->where('id', $recordId)->increment('stock');
+        
+        // Ambil nama hanya untuk notifikasi
+        $name = \App\Models\Product::where('id', $recordId)->value('name');
 
-            Notification::make()
-                ->title('Stok Ditambah')
-                ->body("Stok \"{$product->name}\" bertambah menjadi " . ($product->stock + 1))
-                ->success()
-                ->duration(3000)
-                ->send();
-        }
+        Notification::make()
+            ->title('Stok Ditambah')
+            ->body("Stok \"{$name}\" berhasil ditambah")
+            ->success()
+            ->duration(2000)
+            ->send();
     }
 
     public function decrementStock($recordId)
     {
-        $product = Product::select(['id', 'name', 'stock', 'low_stock_threshold'])->find($recordId);
+        $product = \App\Models\Product::select(['id', 'name', 'stock', 'low_stock_threshold'])->find($recordId);
+        
         if ($product && $product->stock > 0) {
             $product->decrement('stock');
             $newStock = $product->stock - 1;
@@ -85,39 +87,27 @@ class RestockWidget extends TableWidget
             $notification = Notification::make()
                 ->title('Stok Dikurangi')
                 ->body("Stok \"{$product->name}\" berkurang menjadi {$newStock}")
-                ->duration(3000);
+                ->duration(2000);
 
-            if ($newStock == 0) {
-                $notification->danger()->title('Stok Habis!')->body("Stok \"{$product->name}\" sekarang 0!");
-            } elseif ($newStock <= $product->low_stock_threshold) {
-                $notification->warning()->body("Stok \"{$product->name}\" berkurang menjadi {$newStock} (di bawah batas minimum)");
+            if ($newStock <= $product->low_stock_threshold) {
+                $notification->warning();
             } else {
                 $notification->info();
             }
 
             $notification->send();
-        } elseif ($product && $product->stock <= 0) {
-            Notification::make()
-                ->title('Tidak Bisa Dikurangi')
-                ->body("Stok \"{$product->name}\" sudah 0!")
-                ->danger()
-                ->duration(3000)
-                ->send();
         }
     }
 
     public function updateStock($recordId, $value)
     {
-        $product = Product::select(['id', 'name', 'stock'])->find($recordId);
-        if ($product && is_numeric($value) && $value >= 0) {
-            $oldStock = $product->stock;
-            $product->update(['stock' => (int) $value]);
+        if (is_numeric($value) && $value >= 0) {
+            \App\Models\Product::where('id', $recordId)->update(['stock' => (int) $value]);
 
             Notification::make()
                 ->title('Stok Diperbarui')
-                ->body("Stok \"{$product->name}\" diubah dari {$oldStock} menjadi {$value}")
                 ->success()
-                ->duration(3000)
+                ->duration(2000)
                 ->send();
         }
     }
