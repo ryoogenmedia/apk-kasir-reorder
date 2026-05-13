@@ -1,32 +1,21 @@
 @php
-    $logo = \App\Models\Setting::where('key', 'site_logo')->first()?->value;
-    $logoUrl = $logo ? \Illuminate\Support\Facades\Storage::disk('public')->url($logo) : null;
+    // Ambil data dari cache yang sudah disiapkan di AdminPanelProvider
+    $logoUrl = cache('site_logo_url_cached');
     $isLogin = request()->routeIs('filament.admin.auth.login');
 @endphp
 
-@if ($logoUrl)
-    @if ($isLogin)
-        {{-- Login page: logo positioned above card --}}
+@if($logoUrl)
+    @if($isLogin)
         <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-            <img src="{{ $logoUrl }}" 
-                 alt="Logo" 
-                 style="height: 100px; width: auto; max-width: 200px; object-fit: contain; border-radius: 12px;">
+            <img src="{{ $logoUrl }}" alt="Logo" style="height: 80px; width: auto; border-radius: 12px;">
         </div>
     @else
-        {{-- Sidebar: compact logo --}}
-        <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 10px 8px;">
-            <img src="{{ $logoUrl }}" 
-                 alt="Logo" 
-                 style="height: 48px; width: auto; max-width: 100%; object-fit: contain; border-radius: 8px;">
+        <div style="padding: 0.5rem; display: flex; align-items: center; justify-content: center;">
+            <img src="{{ $logoUrl }}" alt="Logo" style="height: 40px; width: auto; border-radius: 8px;">
         </div>
     @endif
 @else
-    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 10px 8px;">
-        <div style="font-size: {{ $isLogin ? '1.5rem' : '0.95rem' }}; font-weight: 800; color: #a78bfa; letter-spacing: -0.02em; line-height: 1.2; text-align: center;">
-            Tokonudhin & Hj Lina
-        </div>
-        <div style="font-size: {{ $isLogin ? '0.85rem' : '0.6rem' }}; color: #c4b5fd; font-weight: 500; margin-top: 2px; text-align: center;">
-            Aneka Barang Campuran
-        </div>
-    </div>
+    <span class="text-xl font-bold tracking-tight text-indigo-600">
+        {{ config('app.name') }}
+    </span>
 @endif

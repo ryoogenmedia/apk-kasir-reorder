@@ -30,20 +30,29 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        // Cache settings for 10 minutes - array only to avoid serialization issues
-        $settings = cache()->remember('panel_settings_array', 600, function () {
+        // Cache settings super agresif (1 jam) untuk server 2-core
+        $settings = cache()->remember('panel_settings_array_v2', 3600, function () {
             try {
-                return Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key')->toArray();
+                $data = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key')->toArray();
+                
+                // Simpan URL logo ke cache terpisah agar bisa diakses Blade tanpa query
+                if (isset($data['site_logo'])) {
+                    cache()->put('site_logo_url_cached', Storage::disk('public')->url($data['site_logo']), 3600);
+                }
+                
+                return $data;
             } catch (\Exception $e) {
                 return [];
             }
         });
 
-        $logoUrl = ($settings['site_logo'] ?? null) ? Storage::disk('public')->url($settings['site_logo']) : null;
         $faviconUrl = ($settings['site_favicon'] ?? null) ? Storage::disk('public')->url($settings['site_favicon']) : null;
         $siteName = $settings['site_name'] ?? 'Tokonudhin & Hj Lina';
 
-        // Cache custom CSS to avoid reading file from disk every time
+        // Pastikan URL logo selalu ada di cache setiap kali provider ini dijalankan (jika cache kosong)
+        if (!cache()->has('site_logo_url_cached') && isset($settings['site_logo'])) {
+             cache()->put('site_logo_url_cached', Storage::disk('public')->url($settings['site_logo']), 3600);
+        }
         $customCss = cache()->remember('filament_custom_css_content', 600, function () {
             $path = resource_path('css/filament-custom.css');
             return file_exists($path) ? file_get_contents($path) : '';

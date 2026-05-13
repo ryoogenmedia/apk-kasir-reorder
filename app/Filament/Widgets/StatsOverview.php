@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends StatsOverviewWidget
 {
-    protected static bool $isLazy = true;
+    protected static bool $isLazy = false;
 
     protected static ?int $sort = 1;
 

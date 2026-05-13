@@ -3,29 +3,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Terlalu Cepat | 429</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Terlalu Banyak Permintaan | 429</title>
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #fef2f2; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; color: #991b1b; text-align: center; }
-        .container { padding: 2rem; max-width: 500px; animation: fadeIn 0.8s ease-out; }
-        .error-code { font-size: 8rem; font-weight: 600; margin: 0; background: linear-gradient(135deg, #f87171, #dc2626); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
-        h1 { font-size: 1.5rem; margin-top: 0; color: #b91c1c; }
-        p { color: #991b1b; opacity: 0.8; line-height: 1.6; margin-bottom: 2rem; }
-        .btn { display: inline-block; background: #ef4444; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3); }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.4); background: #dc2626; }
-        .icon-box { font-size: 4rem; margin-bottom: 1rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: ui-sans-serif, system-ui, sans-serif; background: #fff; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .container { padding: 1.5rem; max-width: 450px; }
+        .error-code { font-size: 6rem; font-weight: 800; color: #dc2626; line-height: 1; margin: 0; }
+        h1 { font-size: 1.5rem; margin: 1rem 0; color: #991b1b; }
+        p { color: #6b7280; margin-bottom: 2rem; }
+        .btn { display: inline-block; background: #dc2626; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon-box">🚦</div>
+        <div style="font-size: 3rem;">🚦</div>
         <p class="error-code">429</p>
-        <h1>Terlalu Banyak Permintaan</h1>
-        <p>Sistem mendeteksi aktivitas yang terlalu cepat. Silakan tunggu beberapa saat sebelum mencoba kembali.</p>
-        <a href="/admin" class="btn">Coba Lagi Nanti</a>
+        <h1>Terlalu Cepat</h1>
+        <p>Sistem mendeteksi banyak permintaan sekaligus. Tunggu sebentar lagi.</p>
+        <a href="/admin" class="btn">Kembali</a>
     </div>
 </body>
 </html>
