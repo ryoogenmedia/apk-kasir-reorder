@@ -23,8 +23,17 @@ class CategorySalesChart extends ChartWidget
                     'label' => 'Total (Rp)',
                     'data' => $data->pluck('total')->toArray(),
                     'backgroundColor' => [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                        '#6366f1', // Indigo
+                        '#06b6d4', // Cyan
+                        '#f59e0b', // Amber
+                        '#ef4444', // Red
+                        '#10b981', // Emerald
+                        '#8b5cf6', // Violet
+                        '#ec4899', // Pink
+                        '#14b8a6', // Teal
                     ],
+                    'borderWidth' => 0,
+                    'hoverOffset' => 8,
                 ],
             ],
             'labels' => $data->pluck('category')->toArray(),
@@ -34,5 +43,21 @@ class CategorySalesChart extends ChartWidget
     protected function getType(): string
     {
         return 'doughnut';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                    'labels' => [
+                        'usePointStyle' => true,
+                        'padding' => 16,
+                    ],
+                ],
+            ],
+            'cutout' => '65%',
+        ];
     }
 }

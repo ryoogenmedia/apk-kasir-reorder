@@ -23,8 +23,15 @@ class SalesChart extends ChartWidget
                     'label' => 'Total Penjualan (Rp)',
                     'data' => $data->pluck('total')->toArray(),
                     'fill' => 'start',
-                    'borderColor' => 'rgb(54, 162, 235)',
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.1)',
+                    'borderColor' => '#6366f1',
+                    'backgroundColor' => 'rgba(99, 102, 241, 0.15)',
+                    'tension' => 0.4,
+                    'pointBackgroundColor' => '#6366f1',
+                    'pointBorderColor' => '#fff',
+                    'pointBorderWidth' => 2,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'borderWidth' => 3,
                 ],
             ],
             'labels' => $data->pluck('date')->map(fn ($date) => \Carbon\Carbon::parse($date)->format('d M'))->toArray(),
@@ -34,5 +41,34 @@ class SalesChart extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
+                    'labels' => [
+                        'usePointStyle' => true,
+                        'padding' => 20,
+                    ],
+                ],
+            ],
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'grid' => [
+                        'color' => 'rgba(148, 163, 184, 0.1)',
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+            ],
+        ];
     }
 }

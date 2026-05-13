@@ -25,20 +25,26 @@ class RestockWidget extends TableWidget
             )
             ->columns([
                 ImageColumn::make('image')
-                    ->label('Foto')
+                    ->label('Foto Produk')
                     ->disk('public')
                     ->height(40)
                     ->width(40)
                     ->rounded(),
                 TextColumn::make('name')
                     ->label('Nama Produk')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('low_stock_threshold')
-                    ->label('Batas Minimum'),
+                    ->label('Batas Minimum')
+                    ->sortable(),
                 ViewColumn::make('stock')
-                    ->label('Stok Saat Ini (Restock)')
+                    ->label('Stok')
                     ->view('filament.tables.columns.stock-counter')
                     ->alignment(\Filament\Support\Enums\Alignment::Center),
+                TextColumn::make('price')
+                    ->label('Harga')
+                    ->money('IDR')
+                    ->sortable(),
             ])
             ->paginated([10, 30, 100])
             ->recordClasses(fn (Product $record) => match (true) {
