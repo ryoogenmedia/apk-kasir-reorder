@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 
 class RopChart extends ChartWidget
 {
-    protected static ?string $heading = 'Grafik ROP & Status Stok';
+    protected ?string $heading = 'Grafik ROP & Status Stok';
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 3;
 
