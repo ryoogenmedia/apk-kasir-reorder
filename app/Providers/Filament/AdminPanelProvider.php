@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
 
         $logoUrl = $settings->get('site_logo') ? Storage::disk('public')->url($settings->get('site_logo')) : null;
         $faviconUrl = $settings->get('site_favicon') ? Storage::disk('public')->url($settings->get('site_favicon')) : null;
-        $siteName = $settings->get('site_name') ?? 'POS Kasir';
+        $siteName = $settings->get('site_name') ?? 'Tokonudhin & Hj Lina';
 
         return $panel
             ->default()

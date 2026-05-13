@@ -133,12 +133,16 @@
     --tw-text-opacity: 1;
 }
 
-/* Brand name in topbar */
+/* Brand name in topbar & sidebar - PURPLE */
 .fi-topbar .fi-logo,
 .fi-topbar .fi-logo *,
 .fi-topbar nav > div > a,
-.fi-topbar nav > div > a * {
-    color: #e0e7ff !important;
+.fi-topbar nav > div > a *,
+.fi-sidebar-header .fi-logo,
+.fi-sidebar-header .fi-logo *,
+.fi-sidebar-header a,
+.fi-sidebar-header a * {
+    color: #a78bfa !important;
 }
 
 /* Topbar icons (search, user avatar border) */
@@ -182,34 +186,28 @@
 
 /* ===== REALTIME CLOCK ===== */
 .fi-realtime-clock {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 0.5rem;
-    color: #e0e7ff;
-    font-size: 0.8rem;
-    font-weight: 500;
-    font-family: 'Inter', monospace;
+    gap: 6px;
+    padding: 6px 16px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 999px;
     white-space: nowrap;
 }
 
 .fi-realtime-clock .clock-icon {
-    color: #a5b4fc;
+    color: #7c3aed;
+    flex-shrink: 0;
 }
 
-.fi-realtime-clock .clock-day {
-    color: #a5b4fc;
+.fi-realtime-clock .clock-text {
+    color: #6d28d9;
+    font-size: 0.8rem;
     font-weight: 600;
-}
-
-.fi-realtime-clock .clock-time {
-    color: #ffffff;
+    font-family: 'Inter', sans-serif;
     font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
 }
 
 /* ===== STAT CARD ENHANCEMENTS ===== */
@@ -231,4 +229,20 @@
 
 .fi-wi-chart:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ===== LOGIN PAGE: Logo above card ===== */
+.fi-simple-layout .fi-simple-main-ctn {
+    position: relative !important;
+    overflow: visible !important;
+    margin-top: 70px !important;
+}
+
+.fi-simple-layout .fi-logo {
+    position: absolute !important;
+    top: -80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    z-index: 10 !important;
 }

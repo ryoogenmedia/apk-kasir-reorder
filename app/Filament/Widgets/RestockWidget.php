@@ -9,6 +9,7 @@ use App\Models\Product;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Notifications\Notification;
 
 class RestockWidget extends TableWidget
 {
@@ -59,6 +60,13 @@ class RestockWidget extends TableWidget
         $product = Product::find($recordId);
         if ($product) {
             $product->increment('stock');
+
+            Notification::make()
+                ->title('Stok Ditambah')
+                ->body("Stok \"{$product->name}\" bertambah menjadi {$product->fresh()->stock}")
+                ->success()
+                ->duration(3000)
+                ->send();
         }
     }
 
@@ -67,6 +75,29 @@ class RestockWidget extends TableWidget
         $product = Product::find($recordId);
         if ($product && $product->stock > 0) {
             $product->decrement('stock');
+            $newStock = $product->fresh()->stock;
+
+            $notification = Notification::make()
+                ->title('Stok Dikurangi')
+                ->body("Stok \"{$product->name}\" berkurang menjadi {$newStock}")
+                ->duration(3000);
+
+            if ($newStock == 0) {
+                $notification->danger()->title('Stok Habis!')->body("Stok \"{$product->name}\" sekarang 0!");
+            } elseif ($newStock <= $product->low_stock_threshold) {
+                $notification->warning()->body("Stok \"{$product->name}\" berkurang menjadi {$newStock} (di bawah batas minimum)");
+            } else {
+                $notification->info();
+            }
+
+            $notification->send();
+        } elseif ($product && $product->stock <= 0) {
+            Notification::make()
+                ->title('Tidak Bisa Dikurangi')
+                ->body("Stok \"{$product->name}\" sudah 0!")
+                ->danger()
+                ->duration(3000)
+                ->send();
         }
     }
 
@@ -74,7 +105,16 @@ class RestockWidget extends TableWidget
     {
         $product = Product::find($recordId);
         if ($product && is_numeric($value) && $value >= 0) {
+            $oldStock = $product->stock;
             $product->update(['stock' => (int) $value]);
+
+            Notification::make()
+                ->title('Stok Diperbarui')
+                ->body("Stok \"{$product->name}\" diubah dari {$oldStock} menjadi {$value}")
+                ->success()
+                ->duration(3000)
+                ->send();
         }
     }
 }
+
