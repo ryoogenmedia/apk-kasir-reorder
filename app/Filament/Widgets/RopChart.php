@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 class RopChart extends ChartWidget
 {
     protected ?string $heading = 'Grafik Perhitungan ROP (Reorder Point)';
+    protected int | string | array $columnSpan = 'full';
 
     protected function getData(): array
     {

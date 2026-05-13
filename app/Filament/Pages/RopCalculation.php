@@ -22,6 +22,12 @@ class RopCalculation extends Page
     {
         return [
             RopChart::class,
+            \App\Filament\Widgets\OutOfStockWidget::class,
         ];
+    }
+
+    public function getColumns(): int | string | array
+    {
+        return 1;
     }
 }
