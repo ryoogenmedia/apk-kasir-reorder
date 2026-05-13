@@ -30,17 +30,10 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        // Cache settings super agresif (1 jam) untuk server 2-core
-        $settings = cache()->remember('panel_settings_array_v2', 3600, function () {
+        // Cache settings 10 menit (600 detik) agar perubahan logo lebih cepat terlihat
+        $settings = cache()->remember('panel_settings_array_v2', 600, function () {
             try {
-                $data = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key')->toArray();
-                
-                // Simpan URL logo ke cache terpisah agar bisa diakses Blade tanpa query
-                if (isset($data['site_logo'])) {
-                    cache()->put('site_logo_url_cached', Storage::disk('public')->url($data['site_logo']), 3600);
-                }
-                
-                return $data;
+                return Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key')->toArray();
             } catch (\Exception $e) {
                 return [];
             }
