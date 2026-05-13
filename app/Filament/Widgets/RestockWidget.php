@@ -16,17 +16,21 @@ class RestockWidget extends TableWidget
     protected static ?string $heading = 'Manajemen Restock Produk';
     protected int | string | array $columnSpan = 'full';
 
+    // Reduce polling — no auto refresh, user triggers updates manually
+    protected ?string $pollingInterval = null;
+
     public function table(Table $table): Table
     {
         return $table
             ->query(
                 fn (): Builder => Product::query()
+                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'price', 'image'])
                     ->orderByRaw("CASE WHEN stock = 0 THEN 1 WHEN stock <= low_stock_threshold THEN 2 ELSE 3 END")
                     ->orderBy('name')
             )
             ->columns([
                 ImageColumn::make('image')
-                    ->label('Foto Produk')
+                    ->label('Foto')
                     ->disk('public')
                     ->height(40)
                     ->width(40)
@@ -36,7 +40,7 @@ class RestockWidget extends TableWidget
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('low_stock_threshold')
-                    ->label('Batas Minimum')
+                    ->label('Batas Min.')
                     ->sortable(),
                 ViewColumn::make('stock')
                     ->label('Stok')
@@ -47,7 +51,8 @@ class RestockWidget extends TableWidget
                     ->money('IDR')
                     ->sortable(),
             ])
-            ->paginated([10, 30, 100])
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25, 50])
             ->recordClasses(fn (Product $record) => match (true) {
                 $record->stock == 0 => 'bg-danger-500/10 border-l-4 border-danger-500',
                 $record->stock <= $record->low_stock_threshold => 'bg-warning-500/10 border-l-4 border-warning-500',
@@ -57,13 +62,13 @@ class RestockWidget extends TableWidget
 
     public function incrementStock($recordId)
     {
-        $product = Product::find($recordId);
+        $product = Product::select(['id', 'name', 'stock'])->find($recordId);
         if ($product) {
             $product->increment('stock');
 
             Notification::make()
                 ->title('Stok Ditambah')
-                ->body("Stok \"{$product->name}\" bertambah menjadi {$product->fresh()->stock}")
+                ->body("Stok \"{$product->name}\" bertambah menjadi " . ($product->stock + 1))
                 ->success()
                 ->duration(3000)
                 ->send();
@@ -72,10 +77,10 @@ class RestockWidget extends TableWidget
 
     public function decrementStock($recordId)
     {
-        $product = Product::find($recordId);
+        $product = Product::select(['id', 'name', 'stock', 'low_stock_threshold'])->find($recordId);
         if ($product && $product->stock > 0) {
             $product->decrement('stock');
-            $newStock = $product->fresh()->stock;
+            $newStock = $product->stock - 1;
 
             $notification = Notification::make()
                 ->title('Stok Dikurangi')
@@ -103,7 +108,7 @@ class RestockWidget extends TableWidget
 
     public function updateStock($recordId, $value)
     {
-        $product = Product::find($recordId);
+        $product = Product::select(['id', 'name', 'stock'])->find($recordId);
         if ($product && is_numeric($value) && $value >= 0) {
             $oldStock = $product->stock;
             $product->update(['stock' => (int) $value]);
@@ -117,4 +122,3 @@ class RestockWidget extends TableWidget
         }
     }
 }
-

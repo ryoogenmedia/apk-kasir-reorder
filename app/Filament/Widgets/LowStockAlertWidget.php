@@ -15,12 +15,19 @@ class LowStockAlertWidget extends TableWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    // No auto-refresh needed
+    protected ?string $pollingInterval = null;
+
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                fn (): Builder => Product::query()->whereColumn('stock', '<=', 'low_stock_threshold')
+                fn (): Builder => Product::query()
+                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'category_id'])
+                    ->whereColumn('stock', '<=', 'low_stock_threshold')
             )
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25])
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama Produk'),
