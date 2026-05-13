@@ -240,9 +240,22 @@
 
 .fi-simple-layout .fi-logo {
     position: absolute !important;
-    top: -80px !important;
+    top: 50px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: auto !important;
     z-index: 10 !important;
+}
+
+/* ===== REPORT PAGE: Full-width content ===== */
+.fi-page .fi-page-content-ctn {
+    max-width: 100% !important;
+}
+
+.fi-ta {
+    width: 100% !important;
+}
+
+.fi-ta-ctn {
+    width: 100% !important;
 }
