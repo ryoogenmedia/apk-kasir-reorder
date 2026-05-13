@@ -4,42 +4,51 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Support\Carbon;
 
 class RopChart extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Perhitungan ROP (Reorder Point)';
+    protected static ?string $heading = 'Grafik ROP & Status Stok';
     protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 3;
+
+    protected function getFilters(): ?array
+    {
+        $categories = Category::pluck('name', 'id')->toArray();
+        return ['all' => 'Semua Kategori'] + $categories;
+    }
 
     protected function getData(): array
     {
-        // Get all products and sum their sold quantities in the last 30 days
-        $products = Product::withSum(['orderItems as total_sold_30_days' => function ($query) {
-            $query->whereHas('order', function ($q) {
-                $q->where('order_date', '>=', Carbon::now()->subDays(30));
+        $activeFilter = $this->filter;
+
+        $query = Product::withSum(['orderItems as total_sold_30_days' => function ($q) {
+            $q->whereHas('order', function ($o) {
+                $o->where('order_date', '>=', Carbon::now()->subDays(30));
             });
-        }], 'quantity')->get();
+        }], 'quantity');
+
+        if ($activeFilter && $activeFilter !== 'all') {
+            $query->where('category_id', $activeFilter);
+        }
+
+        $products = $query->get();
 
         $labels = [];
         $stocks = [];
-        $currentThresholds = [];
         $suggestedRops = [];
 
         foreach ($products as $product) {
             $labels[] = $product->name;
             $stocks[] = $product->stock;
-            $currentThresholds[] = $product->low_stock_threshold;
             
-            // Total sold in last 30 days
             $totalSold = $product->total_sold_30_days ?? 0;
             $avgDailyDemand = $totalSold / 30;
+            $leadTime = 3; 
+            $safetyStock = 5; 
             
-            // ROP Formula: (Avg Daily Demand * Lead Time) + Safety Stock
-            $leadTime = 3; // Asumsi lead time 3 hari
-            $safetyStock = 5; // Asumsi safety stock 5 unit
-            
-            $suggestedRop = ceil(($avgDailyDemand * $leadTime) + $safetyStock);
-            $suggestedRops[] = $suggestedRop;
+            $suggestedRops[] = ceil(($avgDailyDemand * $leadTime) + $safetyStock);
         }
 
         return [
@@ -47,20 +56,16 @@ class RopChart extends ChartWidget
                 [
                     'label' => 'Stok Saat Ini',
                     'data' => $stocks,
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.5)',
-                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'backgroundColor' => '#3b82f6',
+                    'borderRadius' => 6,
+                    'borderWidth' => 0,
                 ],
                 [
-                    'label' => 'Batas Minimum Saat Ini',
-                    'data' => $currentThresholds,
-                    'backgroundColor' => 'rgba(255, 159, 64, 0.5)',
-                    'borderColor' => 'rgba(255, 159, 64, 1)',
-                ],
-                [
-                    'label' => 'ROP Saran (Kalkulasi)',
+                    'label' => 'ROP Saran (Min. Stok)',
                     'data' => $suggestedRops,
-                    'backgroundColor' => 'rgba(75, 192, 192, 0.5)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'backgroundColor' => '#10b981',
+                    'borderRadius' => 6,
+                    'borderWidth' => 0,
                 ],
             ],
             'labels' => $labels,
@@ -70,5 +75,34 @@ class RopChart extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
+                    'labels' => [
+                        'usePointStyle' => true,
+                        'padding' => 20,
+                    ],
+                ],
+            ],
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'grid' => [
+                        'color' => 'rgba(156, 163, 175, 0.1)',
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+            ],
+        ];
     }
 }

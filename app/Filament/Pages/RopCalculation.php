@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use App\Filament\Widgets\RopChart;
 use Filament\Support\Icons\Heroicon;
 use UnitEnum;
 use BackedEnum;
@@ -11,8 +10,8 @@ use BackedEnum;
 class RopCalculation extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
-    protected static ?string $navigationLabel = 'Perhitungan ROP';
-    protected static ?string $title = 'Grafik Perhitungan ROP';
+    protected static ?string $navigationLabel = 'Stok';
+    protected static ?string $title = 'Manajemen Stok Produk';
     protected string $view = 'filament.pages.rop-calculation';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Produk';
     protected static ?int $navigationSort = 3;
@@ -21,8 +20,7 @@ class RopCalculation extends Page
 
     {
         return [
-            RopChart::class,
-            \App\Filament\Widgets\OutOfStockWidget::class,
+            \App\Filament\Widgets\RestockWidget::class,
         ];
     }
 
