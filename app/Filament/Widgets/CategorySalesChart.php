@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 
 class CategorySalesChart extends ChartWidget
 {
+    protected static bool $isLazy = true;
+
     protected ?string $heading = 'Penjualan Per Kategori';
     protected static ?int $sort = 4;
 

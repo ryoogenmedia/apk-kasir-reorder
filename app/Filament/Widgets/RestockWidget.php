@@ -10,13 +10,16 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 
 class RestockWidget extends TableWidget
 {
+    protected static bool $isLazy = true;
+
     protected static ?string $heading = 'Manajemen Restock Produk';
+    
     protected int | string | array $columnSpan = 'full';
 
-    // Reduce polling — no auto refresh, user triggers updates manually
     protected ?string $pollingInterval = null;
 
     public function table(Table $table): Table
@@ -62,11 +65,9 @@ class RestockWidget extends TableWidget
 
     public function incrementStock($recordId)
     {
-        // Update langsung di DB (Atomic)
-        \Illuminate\Support\Facades\DB::table('products')->where('id', $recordId)->increment('stock');
+        DB::table('products')->where('id', $recordId)->increment('stock');
         
-        // Ambil nama hanya untuk notifikasi
-        $name = \App\Models\Product::where('id', $recordId)->value('name');
+        $name = Product::where('id', $recordId)->value('name');
 
         Notification::make()
             ->title('Stok Ditambah')
@@ -78,7 +79,7 @@ class RestockWidget extends TableWidget
 
     public function decrementStock($recordId)
     {
-        $product = \App\Models\Product::select(['id', 'name', 'stock', 'low_stock_threshold'])->find($recordId);
+        $product = Product::select(['id', 'name', 'stock', 'low_stock_threshold'])->find($recordId);
         
         if ($product && $product->stock > 0) {
             $product->decrement('stock');
@@ -102,7 +103,7 @@ class RestockWidget extends TableWidget
     public function updateStock($recordId, $value)
     {
         if (is_numeric($value) && $value >= 0) {
-            \App\Models\Product::where('id', $recordId)->update(['stock' => (int) $value]);
+            Product::where('id', $recordId)->update(['stock' => (int) $value]);
 
             Notification::make()
                 ->title('Stok Diperbarui')

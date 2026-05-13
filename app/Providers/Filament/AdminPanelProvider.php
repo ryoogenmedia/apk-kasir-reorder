@@ -30,15 +30,24 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        try {
-            $settings = Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key');
-        } catch (\Exception $e) {
-            $settings = collect();
-        }
+        // Cache settings for 10 minutes - array only to avoid serialization issues
+        $settings = cache()->remember('panel_settings_array', 600, function () {
+            try {
+                return Setting::whereIn('key', ['site_logo', 'site_favicon', 'site_name'])->get()->pluck('value', 'key')->toArray();
+            } catch (\Exception $e) {
+                return [];
+            }
+        });
 
-        $logoUrl = $settings->get('site_logo') ? Storage::disk('public')->url($settings->get('site_logo')) : null;
-        $faviconUrl = $settings->get('site_favicon') ? Storage::disk('public')->url($settings->get('site_favicon')) : null;
-        $siteName = $settings->get('site_name') ?? 'Tokonudhin & Hj Lina';
+        $logoUrl = ($settings['site_logo'] ?? null) ? Storage::disk('public')->url($settings['site_logo']) : null;
+        $faviconUrl = ($settings['site_favicon'] ?? null) ? Storage::disk('public')->url($settings['site_favicon']) : null;
+        $siteName = $settings['site_name'] ?? 'Tokonudhin & Hj Lina';
+
+        // Cache custom CSS to avoid reading file from disk every time
+        $customCss = cache()->remember('filament_custom_css_content', 600, function () {
+            $path = resource_path('css/filament-custom.css');
+            return file_exists($path) ? file_get_contents($path) : '';
+        });
 
         return $panel
             ->default()
@@ -59,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Amber,
             ])
             ->font('Inter')
+            ->spa()
             ->sidebarFullyCollapsibleOnDesktop()
             ->navigationGroups([
                 NavigationGroup::make('Manajemen Produk'),
@@ -68,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn () => new HtmlString('<style>' . file_get_contents(resource_path('css/filament-custom.css')) . '</style>'),
+                fn () => new HtmlString('<style>' . $customCss . '</style>'),
             )
             ->renderHook(
                 PanelsRenderHook::GLOBAL_SEARCH_BEFORE,

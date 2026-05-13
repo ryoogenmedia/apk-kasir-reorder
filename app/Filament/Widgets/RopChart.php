@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class RopChart extends ChartWidget
 {
+    protected static bool $isLazy = true;
+
     protected ?string $heading = 'Grafik ROP & Status Stok';
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 3;
 
-    // Reduce polling to 60s
     protected ?string $pollingInterval = '60s';
 
     protected function getFilters(): ?array
     {
-        // Cache categories for 5 minutes
         $categories = Cache::remember('rop_chart_categories', 300, function () {
             return Category::pluck('name', 'id')->toArray();
         });
@@ -32,7 +32,6 @@ class RopChart extends ChartWidget
         $cacheKey = 'rop_chart_data_' . ($activeFilter ?? 'all');
 
         return Cache::remember($cacheKey, 120, function () use ($activeFilter) {
-            // Simplified query — use raw SQL for 30-day sales aggregation
             $query = Product::query()
                 ->select([
                     'products.id',
@@ -52,7 +51,6 @@ class RopChart extends ChartWidget
                 $query->where('products.category_id', $activeFilter);
             }
 
-            // Limit to 30 products to keep chart readable and reduce load
             $products = $query->limit(30)->get();
 
             $labels = [];

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 
 class SalesChart extends ChartWidget
 {
+    protected static bool $isLazy = true;
+
     protected ?string $heading = 'Grafik Penjualan (30 Hari Terakhir)';
     protected static ?int $sort = 3;
 
