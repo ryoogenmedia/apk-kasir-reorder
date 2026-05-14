@@ -84,6 +84,10 @@ class GeneralSettings extends Page implements HasForms
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
+        // Clear settings cache so logo/favicon changes are reflected immediately
+        cache()->forget('panel_settings_array_v2');
+        cache()->forget('site_logo_url_cached');
+
         Notification::make()
             ->success()
             ->title('Pengaturan berhasil disimpan')
