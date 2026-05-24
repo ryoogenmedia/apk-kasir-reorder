@@ -38,11 +38,14 @@ class ProductSeeder extends Seeder
             }
 
             foreach ($products as $productName) {
+                $price = rand(10, 500) * 1000;
+                $purchasePrice = $price * 0.8;
                 Product::create([
                     'category_id' => $category->id,
                     'name' => $productName,
                     'description' => 'Deskripsi untuk ' . $productName,
-                    'price' => rand(10, 500) * 1000,
+                    'price' => $price,
+                    'purchase_price' => $purchasePrice,
                     'stock' => rand(10, 100),
                     'low_stock_threshold' => rand(5, 10),
                     'max_stock_threshold' => rand(100, 200),
