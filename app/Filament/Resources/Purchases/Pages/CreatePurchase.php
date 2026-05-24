@@ -19,7 +19,7 @@ class CreatePurchase extends Page
     use WithFileUploads;
 
     protected static string $resource = PurchaseResource::class;
-    protected static string $view = 'filament.pages.create-purchase';
+    protected string $view = 'filament.pages.create-purchase';
 
     // Form inputs
     public ?int $supplierId = null;
