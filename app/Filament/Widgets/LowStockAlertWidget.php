@@ -13,6 +13,8 @@ class LowStockAlertWidget extends TableWidget
 {
     protected static ?int $sort = 5;
 
+    protected static bool $isLazy = true;
+
     protected int | string | array $columnSpan = 'full';
 
     // No auto-refresh needed
@@ -50,4 +52,9 @@ class LowStockAlertWidget extends TableWidget
             ])
             ->heading('Peringatan Stok Menipis');
     }
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('filament.widgets.skeleton');
+    }
 }
+

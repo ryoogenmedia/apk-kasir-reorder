@@ -1,5 +1,5 @@
 @php
-    $canEdit = auth()->user() && auth()->user()->hasRole('owner');
+    $canEdit = auth()->user() && auth()->user()->hasAnyRole(['owner', 'admin']);
 @endphp
 <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
     <button 

@@ -47,13 +47,13 @@ class RestockWidget extends TableWidget
                     ->label('Batas Min.')
                     ->type('number')
                     ->rules(['required', 'integer', 'min:0'])
-                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->disabled(fn () => !auth()->user()->hasAnyRole(['owner', 'admin']))
                     ->sortable(),
                 TextInputColumn::make('max_stock_threshold')
                     ->label('Batas Max.')
                     ->type('number')
                     ->rules(['required', 'integer', 'min:0'])
-                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->disabled(fn () => !auth()->user()->hasAnyRole(['owner', 'admin']))
                     ->sortable(),
                 ViewColumn::make('stock')
                     ->label('Stok')
@@ -63,13 +63,13 @@ class RestockWidget extends TableWidget
                     ->label('Harga Beli')
                     ->type('number')
                     ->rules(['required', 'numeric', 'min:0'])
-                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->disabled(fn () => !auth()->user()->hasAnyRole(['owner', 'admin']))
                     ->sortable(),
                 TextInputColumn::make('price')
                     ->label('Harga Jual')
                     ->type('number')
                     ->rules(['required', 'numeric', 'min:0'])
-                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->disabled(fn () => !auth()->user()->hasAnyRole(['owner', 'admin']))
                     ->sortable(),
             ])
             ->filters([
@@ -136,4 +136,9 @@ class RestockWidget extends TableWidget
                 ->send();
         }
     }
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('filament.widgets.skeleton');
+    }
 }
+

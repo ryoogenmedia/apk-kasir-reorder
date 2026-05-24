@@ -114,4 +114,9 @@ class RopChart extends ChartWidget
             ],
         ];
     }
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('filament.widgets.skeleton');
+    }
 }
+

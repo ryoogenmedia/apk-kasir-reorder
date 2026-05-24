@@ -35,19 +35,24 @@ class LaporanProdukTerlaris extends Page implements HasTable
     {
         return $table
             ->query(
-                OrderItem::query()
-                    ->select('product_id')
-                    ->selectRaw('SUM(quantity) as total_qty')
-                    ->selectRaw('SUM(order_items.unit_price * quantity) as total_revenue')
+                \App\Models\Product::query()
+                    ->select([
+                        'products.id',
+                        'products.category_id',
+                        'products.name',
+                    ])
+                    ->selectRaw('SUM(order_items.quantity) as total_qty')
+                    ->selectRaw('SUM(order_items.unit_price * order_items.quantity) as total_revenue')
+                    ->join('order_items', 'products.id', '=', 'order_items.product_id')
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                    ->groupBy('product_id')
+                    ->groupBy('products.id', 'products.category_id', 'products.name')
                     ->orderByDesc('total_qty')
             )
             ->columns([
-                TextColumn::make('product.category.name')
+                TextColumn::make('category.name')
                     ->label('Kategori')
                     ->sortable(),
-                TextColumn::make('product.name')
+                TextColumn::make('name')
                     ->label('Nama Produk')
                     ->searchable()
                     ->sortable(),
@@ -98,8 +103,8 @@ class LaporanProdukTerlaris extends Page implements HasTable
                             fputcsv($output, ['Kategori', 'Nama Produk', 'Total Terjual (Qty)', 'Total Pendapatan']);
                             foreach ($records as $record) {
                                 fputcsv($output, [
-                                    $record->product->category->name ?? '-',
-                                    $record->product->name ?? '-',
+                                    $record->category->name ?? '-',
+                                    $record->name ?? '-',
                                     $record->total_qty,
                                     $record->total_revenue
                                 ]);

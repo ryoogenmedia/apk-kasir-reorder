@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends StatsOverviewWidget
 {
-    protected static bool $isLazy = false;
+    protected static bool $isLazy = true;
 
     protected static ?int $sort = 1;
 
@@ -124,4 +124,9 @@ class StatsOverview extends StatsOverviewWidget
                 ->color($outOfStock > 0 ? 'danger' : 'success'),
         ];
     }
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('filament.widgets.stats-skeleton');
+    }
 }
+

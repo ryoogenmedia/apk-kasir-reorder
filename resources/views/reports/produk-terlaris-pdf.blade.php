@@ -47,8 +47,8 @@
                 @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $record->product->category->name ?? '-' }}</td>
-                    <td>{{ $record->product->name ?? '-' }}</td>
+                    <td>{{ $record->category->name ?? '-' }}</td>
+                    <td>{{ $record->name ?? '-' }}</td>
                     <td class="text-center">{{ $record->total_qty }}</td>
                     <td class="text-right">Rp {{ number_format($record->total_revenue, 0, ',', '.') }}</td>
                 </tr>
