@@ -39,7 +39,11 @@ class ProductsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('low_stock_threshold')
-                    ->label('Batas Stok')
+                    ->label('Batas Min.')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('max_stock_threshold')
+                    ->label('Batas Max.')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

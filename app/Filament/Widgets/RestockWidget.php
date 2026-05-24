@@ -7,6 +7,7 @@ use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Notifications\Notification;
@@ -27,7 +28,7 @@ class RestockWidget extends TableWidget
         return $table
             ->query(
                 fn (): Builder => Product::query()
-                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'price', 'image'])
+                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'max_stock_threshold', 'price', 'image'])
                     ->orderByRaw("CASE WHEN stock = 0 THEN 1 WHEN stock <= low_stock_threshold THEN 2 ELSE 3 END")
                     ->orderBy('name')
             )
@@ -42,8 +43,17 @@ class RestockWidget extends TableWidget
                     ->label('Nama Produk')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('low_stock_threshold')
+                TextInputColumn::make('low_stock_threshold')
                     ->label('Batas Min.')
+                    ->type('number')
+                    ->rules(['required', 'integer', 'min:0'])
+                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->sortable(),
+                TextInputColumn::make('max_stock_threshold')
+                    ->label('Batas Max.')
+                    ->type('number')
+                    ->rules(['required', 'integer', 'min:0'])
+                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
                     ->sortable(),
                 ViewColumn::make('stock')
                     ->label('Stok')
