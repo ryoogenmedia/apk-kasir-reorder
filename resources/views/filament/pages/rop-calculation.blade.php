@@ -49,11 +49,13 @@
 
     </div>
 
-    {{-- Render ROP Page Header Widgets --}}
-    @if ($this->getHeaderWidgets())
-        <x-filament-widgets::widgets
-            :widgets="$this->getHeaderWidgets()"
-            :columns="$this->getColumns()"
-        />
+    {{-- Render ROP Page Body Widgets --}}
+    @if ($this->getBodyWidgets())
+        <div class="mt-6">
+            <x-filament-widgets::widgets
+                :widgets="$this->getBodyWidgets()"
+                :columns="$this->getColumns()"
+            />
+        </div>
     @endif
 </x-filament-panels::page>

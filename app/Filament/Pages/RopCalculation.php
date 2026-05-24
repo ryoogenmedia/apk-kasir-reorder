@@ -43,10 +43,16 @@ class RopCalculation extends Page implements HasForms
 
     public function form(Schema $form): Schema
     {
-        $years = [];
-        $currentYear = (int) date('Y');
-        for ($y = $currentYear - 5; $y <= $currentYear + 2; $y++) {
-            $years[(string) $y] = (string) $y;
+        $years = \App\Models\Order::query()
+            ->selectRaw('DISTINCT YEAR(order_date) as year')
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->mapWithKeys(fn ($y) => [(string) $y => (string) $y])
+            ->toArray();
+
+        if (empty($years)) {
+            $currentYear = date('Y');
+            $years = [(string) $currentYear => (string) $currentYear];
         }
 
         return $form
@@ -131,6 +137,11 @@ class RopCalculation extends Page implements HasForms
     }
 
     protected function getHeaderWidgets(): array
+    {
+        return [];
+    }
+
+    public function getBodyWidgets(): array
     {
         return [
             \App\Filament\Widgets\LowStockAlertWidget::class,
