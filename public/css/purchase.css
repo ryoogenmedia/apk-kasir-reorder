@@ -7,6 +7,12 @@
     font-family: 'Inter', sans-serif;
 }
 
+.purchase-layout > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 @media (min-width: 1024px) {
     .purchase-layout {
         grid-template-columns: 2fr 1fr;
@@ -21,6 +27,11 @@
     padding: 1.5rem;
     box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.02);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Summary card with margin-top separation */
+.purchase-summary-card {
+    margin-top: 0.25rem;
 }
 
 .dark .purchase-panel {
@@ -412,6 +423,7 @@
     font-weight: 800;
     font-size: 0.875rem;
     color: #0f172a;
+    white-space: nowrap;
 }
 
 .dark .subtotal-cell {
@@ -533,12 +545,15 @@
 .summary-item-qtyprice {
     font-size: 0.75rem;
     color: #64748b;
+    white-space: nowrap;
 }
 
 .summary-item-subtotal {
     font-weight: 800;
     font-size: 0.8125rem;
     color: #0f172a;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .dark .summary-item-subtotal {
@@ -574,6 +589,7 @@
     font-size: 1.25rem;
     font-weight: 900;
     color: #4f46e5;
+    white-space: nowrap;
 }
 
 .dark .grand-total-value {
