@@ -43,6 +43,12 @@ class StatsOverview extends StatsOverviewWidget
             $yesterdaySales = $weeklySales[5] ?? 0;
             $salesTrend = $yesterdaySales > 0 ? round((($todaySales - $yesterdaySales) / $yesterdaySales) * 100) : ($todaySales > 0 ? 100 : 0);
 
+            $stockStats = Product::query()
+                ->selectRaw('SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) as out_of_stock, SUM(CASE WHEN stock > 0 AND stock <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock')
+                ->first();
+            $outOfStock = $stockStats->out_of_stock ?? 0;
+            $lowStock = $stockStats->low_stock ?? 0;
+
             return [
                 Stat::make('Total Penjualan (Qty)', $totalOrders)
                     ->description($salesTrend >= 0 ? "Naik {$salesTrend}%" : "Turun " . abs($salesTrend) . "%")
@@ -51,6 +57,12 @@ class StatsOverview extends StatsOverviewWidget
 
                 Stat::make('Total Pendapatan Penjualan', 'Rp ' . number_format($totalRevenue, 0, ',', '.'))
                     ->color('info'),
+
+                Stat::make('Stok Menipis', $lowStock)
+                    ->color($lowStock > 0 ? 'warning' : 'success'),
+
+                Stat::make('Stok Habis', $outOfStock)
+                    ->color($outOfStock > 0 ? 'danger' : 'success'),
             ];
         }
 
@@ -63,7 +75,8 @@ class StatsOverview extends StatsOverviewWidget
             ->selectRaw('COUNT(*) as total, SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) as out_of_stock, SUM(CASE WHEN stock > 0 AND stock <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock')
             ->first();
         $totalProducts = $stockStats->total ?? 0;
-        $lowStockTotal = ($stockStats->out_of_stock ?? 0) + ($stockStats->low_stock ?? 0);
+        $outOfStock = $stockStats->out_of_stock ?? 0;
+        $lowStock = $stockStats->low_stock ?? 0;
 
         $weeklyPemasukanQuery = Order::query()
             ->where('order_date', '>=', Carbon::now()->subDays(6)->startOfDay())
@@ -104,9 +117,11 @@ class StatsOverview extends StatsOverviewWidget
             Stat::make('Total Produk', $totalProducts)
                 ->color('gray'),
 
-            Stat::make('Stok Menipis / Habis', $lowStockTotal)
-                ->description(($stockStats->out_of_stock ?? 0) . ' habis')
-                ->color($lowStockTotal > 0 ? 'danger' : 'success'),
+            Stat::make('Stok Menipis', $lowStock)
+                ->color($lowStock > 0 ? 'warning' : 'success'),
+
+            Stat::make('Stok Habis', $outOfStock)
+                ->color($outOfStock > 0 ? 'danger' : 'success'),
         ];
     }
 }
