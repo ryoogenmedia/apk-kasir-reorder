@@ -19,6 +19,20 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    /* Sticky — tetap di atas saat scroll produk */
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--fi-bg, #f9fafb);
+    padding: 0.5rem 0;
+    margin: -0.5rem 0 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+/* Bayangan muncul saat user mulai scroll */
+.pos-searchbar.is-sticky {
+    border-bottom-color: #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
 }
 
 .pos-search-wrap {
@@ -82,14 +96,16 @@
 
 /* Grid produk */
 .pos-product-grid {
-    min-height: 1200px;
+    min-height: 1600px;
     padding-right: 4px;
+    padding-top: 0.5rem;
 }
 
 .pos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 0.5rem;
+    align-content: start;
 }
 
 /* Kartu produk — layout horizontal compact */
