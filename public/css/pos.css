@@ -4,8 +4,7 @@
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 1rem;
-    height: calc(100vh - 9.5rem);
-    min-height: 500px;
+    align-items: start;
 }
 
 /* ── Panel Produk ─────────────────────────────── */
@@ -13,7 +12,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    overflow: hidden;
     min-width: 0;
 }
 
@@ -84,46 +82,43 @@
 
 /* Grid produk */
 .pos-product-grid {
-    flex: 1;
-    overflow-y: auto;
+    min-height: 1200px;
     padding-right: 4px;
-    scrollbar-width: thin;
-    scrollbar-color: #e5e7eb transparent;
 }
-.pos-product-grid::-webkit-scrollbar { width: 4px; }
-.pos-product-grid::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
 
 .pos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.5rem;
 }
 
-/* Kartu produk */
+/* Kartu produk — layout horizontal compact */
 .pos-card {
     background: #fff;
-    border: 1px solid #f3f4f6;
-    border-radius: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    border: 1px solid #f0f0f0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
     overflow: hidden;
     cursor: pointer;
     transition: transform .15s, box-shadow .15s, border-color .15s;
     display: flex;
-    flex-direction: column;
-    text-align: left;
+    flex-direction: row;
+    align-items: stretch;
     width: 100%;
+    min-height: 72px;
 }
 .pos-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
     border-color: #93c5fd;
 }
-.pos-card:active { transform: scale(0.97); }
+.pos-card:active { transform: scale(0.98); }
 
 .pos-card-img {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1;
+    width: 72px;
+    flex-shrink: 0;
+    aspect-ratio: unset;
     background: linear-gradient(135deg, #f9fafb, #f3f4f6);
     overflow: hidden;
 }
@@ -147,7 +142,7 @@
 .pos-card-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(59,130,246,.07);
+    background: rgba(59,130,246,.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -159,32 +154,35 @@
 .pos-card-add-icon {
     background: rgba(255,255,255,.9);
     border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
+    width: 1.6rem;
+    height: 1.6rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
 }
 
 .pos-stock-badge {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
     background: #f97316;
     color: #fff;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    padding: 2px 6px;
+    padding: 1px 5px;
     border-radius: 999px;
     line-height: 1.4;
 }
 
 .pos-card-info {
-    padding: 0.625rem;
+    padding: 0.5rem 0.625rem;
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    justify-content: center;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
 }
 .pos-card-name {
     font-size: 0.75rem;
@@ -195,20 +193,20 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.2em;
 }
 .pos-card-category {
-    font-size: 0.65rem;
+    font-size: 0.625rem;
     color: #9ca3af;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .pos-card-price {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #2563eb;
-    margin-top: 0.25rem;
+    margin-top: 0.15rem;
+    white-space: nowrap;
 }
 
 .pos-empty {
@@ -234,6 +232,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,.06);
     overflow: hidden;
     flex-shrink: 0;
+    /* Sticky — tetap terlihat saat scroll produk */
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 8rem);
 }
 
 .pos-cart-header {
