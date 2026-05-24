@@ -56,24 +56,24 @@ class OrdersTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('view_qris_proof')
+                \Filament\Actions\Action::make('view_qris_proof')
                     ->label('Bukti QRIS')
                     ->icon('heroicon-o-qr-code')
                     ->color('success')
                     ->modalHeading('Bukti Pembayaran QRIS')
                     ->modalContent(fn ($record) => view('filament.components.proof-modal', ['image' => $record->qris_proof]))
                     ->visible(fn ($record) => $record->payment_method === 'qris' && !empty($record->qris_proof)),
-                \Filament\Tables\Actions\Action::make('print_receipt')
+                \Filament\Actions\Action::make('print_receipt')
                     ->label('Cetak Struk')
                     ->icon('heroicon-o-printer')
                     ->color('info')
                     ->url(fn ($record) => "/admin/orders/receipt/{$record->id}")
                     ->openUrlInNewTab(),
-                \Filament\Tables\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make(),
             ])
             ->toolbarActions([
-                \Filament\Tables\Actions\BulkActionGroup::make([
-                    \Filament\Tables\Actions\DeleteBulkAction::make()
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make()
                         ->successNotification(
                             \Filament\Notifications\Notification::make()
                                 ->success()

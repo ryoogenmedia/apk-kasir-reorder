@@ -44,18 +44,18 @@ class PurchasesTable
                 //
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('view_purchase_proof')
+                \Filament\Actions\Action::make('view_purchase_proof')
                     ->label('Bukti')
                     ->icon('heroicon-o-document-text')
                     ->color('info')
                     ->modalHeading('Bukti Pembelian Supplier')
                     ->modalContent(fn ($record) => view('filament.components.proof-modal', ['image' => $record->proof_image]))
                     ->visible(fn ($record) => !empty($record->proof_image)),
-                \Filament\Tables\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make(),
             ])
             ->toolbarActions([
-                \Filament\Tables\Actions\BulkActionGroup::make([
-                    \Filament\Tables\Actions\DeleteBulkAction::make()
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make()
                         ->successNotification(
                             \Filament\Notifications\Notification::make()
                                 ->success()
