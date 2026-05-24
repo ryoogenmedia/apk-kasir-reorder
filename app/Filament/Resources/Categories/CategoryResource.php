@@ -24,6 +24,11 @@ class CategoryResource extends Resource
     protected static ?string $modelLabel = 'Kategori';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Produk';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     protected static ?string $recordTitleAttribute = 'name';
