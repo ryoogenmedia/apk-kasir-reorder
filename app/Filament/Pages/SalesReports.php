@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Order;
+use App\Models\TransactionLedger;
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,14 +23,19 @@ class SalesReports extends Page implements HasTable, HasForms
     use InteractsWithForms;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
-    protected static ?string $navigationLabel = 'Laporan Penjualan';
-    protected static ?string $title = 'Laporan Penjualan';
+    protected static ?string $navigationLabel = 'Laporan Transaksi';
+    protected static ?string $title = 'Laporan Transaksi';
     protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.pages.sales-reports';
 
     public ?array $data = [];
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+    }
 
     public function mount(): void
     {
@@ -45,7 +50,7 @@ class SalesReports extends Page implements HasTable, HasForms
         return $form
             ->schema([
                 Section::make('Filter Laporan')
-                    ->description('Pilih rentang tanggal untuk menyaring data penjualan')
+                    ->description('Pilih rentang tanggal untuk menyaring data transaksi')
                     ->schema([
                         DatePicker::make('startDate')
                             ->label('Tanggal Mulai')
@@ -67,36 +72,40 @@ class SalesReports extends Page implements HasTable, HasForms
     {
         return $table
             ->query(
-                Order::query()
-                    ->when($this->data['startDate'] ?? null, fn($q) => $q->whereDate('order_date', '>=', $this->data['startDate']))
-                    ->when($this->data['endDate'] ?? null, fn($q) => $q->whereDate('order_date', '<=', $this->data['endDate']))
-                    ->orderBy('order_date', 'desc')
+                TransactionLedger::query()
+                    ->when($this->data['startDate'] ?? null, fn($q) => $q->whereDate('date', '>=', $this->data['startDate']))
+                    ->when($this->data['endDate'] ?? null, fn($q) => $q->whereDate('date', '<=', $this->data['endDate']))
+                    ->orderBy('date', 'desc')
+                    ->orderBy('created_at', 'desc')
             )
             ->columns([
-                TextColumn::make('order_date')
+                TextColumn::make('date')
                     ->label('Tanggal')
                     ->date('d M Y')
                     ->sortable(),
-                TextColumn::make('user.name')
-                    ->label('Kasir')
-                    ->searchable(),
-                TextColumn::make('payment_method')
-                    ->label('Metode')
+                TextColumn::make('type')
+                    ->label('Tipe')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => ucfirst($state)),
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'completed' => 'success',
-                        'pending' => 'warning',
+                    ->color(fn (string $state): string => match ($state) {
+                        'pemasukan' => 'success',
+                        'pengeluaran' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => ucfirst($state)),
-                TextColumn::make('total_amount')
-                    ->label('Total')
+                TextColumn::make('actor_name')
+                    ->label('Kasir / PJ')
+                    ->searchable(),
+                TextColumn::make('detail')
+                    ->label('Detail / Keterangan')
+                    ->formatStateUsing(fn ($state, $record) => $record->type === 'pemasukan' 
+                        ? 'Penjualan (' . ($state === 'cash' ? 'Tunai' : 'QRIS') . ')'
+                        : 'Pembelian (' . $state . ')'
+                    )
+                    ->searchable(),
+                TextColumn::make('amount')
+                    ->label('Jumlah')
                     ->money('IDR')
-                    ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('Total')->money('IDR'))
+                    ->color(fn ($record) => $record->type === 'pemasukan' ? 'success' : 'danger')
                     ->alignRight(),
             ])
             ->actions([])
@@ -107,19 +116,31 @@ class SalesReports extends Page implements HasTable, HasForms
                     ->icon('heroicon-o-printer')
                     ->color('danger')
                     ->action(fn () => $this->printPdf()),
+                Action::make('cetak_excel')
+                    ->label('Ekspor Excel (CSV)')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->action(fn () => $this->exportCsv()),
             ]);
     }
 
     public function getStats(): array
     {
-        $query = Order::query()
-            ->when($this->data['startDate'] ?? null, fn($q) => $q->whereDate('order_date', '>=', $this->data['startDate']))
-            ->when($this->data['endDate'] ?? null, fn($q) => $q->whereDate('order_date', '<=', $this->data['endDate']));
+        $startDate = $this->data['startDate'] ?? null;
+        $endDate = $this->data['endDate'] ?? null;
+
+        $query = TransactionLedger::query()
+            ->when($startDate, fn($q) => $q->whereDate('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('date', '<=', $endDate));
+
+        $pemasukan = (float) (clone $query)->where('type', 'pemasukan')->sum('amount');
+        $pengeluaran = (float) (clone $query)->where('type', 'pengeluaran')->sum('amount');
+        $balance = $pemasukan - $pengeluaran;
 
         return [
-            'total_sales' => $query->sum('total_amount'),
-            'transaction_count' => $query->count(),
-            'avg_transaction' => $query->avg('total_amount') ?? 0,
+            'total_sales' => $pemasukan,
+            'total_purchases' => $pengeluaran,
+            'balance' => $balance,
         ];
     }
 
@@ -128,22 +149,89 @@ class SalesReports extends Page implements HasTable, HasForms
         $startDate = $this->data['startDate'];
         $endDate = $this->data['endDate'];
 
-        $orders = Order::query()
-            ->when($startDate, fn($q) => $q->whereDate('order_date', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->whereDate('order_date', '<=', $endDate))
-            ->with('user')
-            ->orderBy('order_date', 'asc')
+        $transactions = TransactionLedger::query()
+            ->when($startDate, fn($q) => $q->whereDate('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('date', '<=', $endDate))
+            ->orderBy('date', 'asc')
             ->get();
 
-        $pdf = Pdf::loadView('reports.sales-pdf', [
-            'orders' => $orders,
+        $stats = $this->getStats();
+
+        $pdf = Pdf::loadView('reports.transactions-pdf', [
+            'transactions' => $transactions,
             'startDate' => Carbon::parse($startDate)->format('d/m/Y'),
             'endDate' => Carbon::parse($endDate)->format('d/m/Y'),
+            'stats' => $stats,
         ]);
 
         return response()->streamDownload(
             fn () => print($pdf->output()),
-            "Laporan_Penjualan_{$startDate}_to_{$endDate}.pdf"
+            "Laporan_Transaksi_{$startDate}_to_{$endDate}.pdf"
         );
+    }
+
+    public function exportCsv()
+    {
+        $startDate = $this->data['startDate'];
+        $endDate = $this->data['endDate'];
+
+        $transactions = TransactionLedger::query()
+            ->when($startDate, fn($q) => $q->whereDate('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->whereDate('date', '<=', $endDate))
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $filename = "Laporan_Transaksi_{$startDate}_to_{$endDate}.csv";
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($transactions) {
+            $file = fopen('php://output', 'w');
+            
+            // Add UTF-8 BOM for proper Excel encoding
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Header
+            fputcsv($file, ['Tanggal', 'Tipe', 'Kasir / PJ', 'Keterangan / Detail', 'Jumlah (IDR)']);
+
+            $totalPemasukan = 0;
+            $totalPengeluaran = 0;
+
+            foreach ($transactions as $row) {
+                $detailStr = $row->type === 'pemasukan' 
+                    ? 'Penjualan (' . ($row->detail === 'cash' ? 'Tunai' : 'QRIS') . ')'
+                    : 'Pembelian (' . $row->detail . ')';
+
+                fputcsv($file, [
+                    $row->date->format('d/m/Y'),
+                    ucfirst($row->type),
+                    $row->actor_name,
+                    $detailStr,
+                    (float) $row->amount
+                ]);
+
+                if ($row->type === 'pemasukan') {
+                    $totalPemasukan += $row->amount;
+                } else {
+                    $totalPengeluaran += $row->amount;
+                }
+            }
+
+            fputcsv($file, []);
+            fputcsv($file, ['RINGKASAN']);
+            fputcsv($file, ['Total Pemasukan', $totalPemasukan]);
+            fputcsv($file, ['Total Pengeluaran', $totalPengeluaran]);
+            fputcsv($file, ['Balance (Net)', $totalPemasukan - $totalPengeluaran]);
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
     }
 }
