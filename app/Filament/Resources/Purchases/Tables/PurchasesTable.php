@@ -55,7 +55,13 @@ class PurchasesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Berhasil Menghapus Data')
+                                ->body('Anda berhasil menghapus beberapa data pembelian.')
+                        ),
                 ]),
             ]);
     }

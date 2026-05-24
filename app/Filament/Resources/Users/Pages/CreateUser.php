@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Pages;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Resources\Pages\CreateRecord;
 use Spatie\Permission\Models\Role;
+use Filament\Notifications\Notification;
 
 class CreateUser extends CreateRecord
 {
@@ -22,5 +23,13 @@ class CreateUser extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Berhasil Menambahkan Data')
+            ->body('Anda berhasil menambahkan data pengguna.');
     }
 }

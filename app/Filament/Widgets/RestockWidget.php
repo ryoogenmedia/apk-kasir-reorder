@@ -130,6 +130,7 @@ class RestockWidget extends TableWidget
 
             Notification::make()
                 ->title('Stok Diperbarui')
+                ->body('Stok produk berhasil diperbarui ke jumlah baru.')
                 ->success()
                 ->duration(2000)
                 ->send();

@@ -77,7 +77,8 @@ class PosKasir extends Page
             // Cek stok
             if ($this->cart[$key]['qty'] >= $product->stock) {
                 Notification::make()
-                    ->title('Stok tidak mencukupi!')
+                    ->title('Stok Tidak Mencukupi')
+                    ->body("Stok \"{$product->name}\" yang tersedia saat ini tidak mencukupi untuk ditambahkan ke keranjang.")
                     ->warning()
                     ->send();
                 return;
@@ -110,7 +111,11 @@ class PosKasir extends Page
         if (!isset($this->cart[$key])) return;
         $product = Product::find($this->cart[$key]['product_id']);
         if ($product && $this->cart[$key]['qty'] >= $product->stock) {
-            Notification::make()->title('Stok tidak mencukupi!')->warning()->send();
+            Notification::make()
+                ->title('Stok Tidak Mencukupi')
+                ->body("Stok \"{$product->name}\" yang tersedia saat ini tidak mencukupi untuk ditambah lagi.")
+                ->warning()
+                ->send();
             return;
         }
         $this->cart[$key]['qty']++;
@@ -179,7 +184,11 @@ class PosKasir extends Page
     public function processTransaction(): void
     {
         if (empty($this->cart)) {
-            Notification::make()->title('Keranjang masih kosong!')->warning()->send();
+            Notification::make()
+                ->title('Keranjang Belanja Kosong')
+                ->body('Silakan pilih dan masukkan produk ke keranjang terlebih dahulu sebelum memproses transaksi.')
+                ->warning()
+                ->send();
             return;
         }
 
@@ -188,7 +197,8 @@ class PosKasir extends Page
         if ($this->paymentMethod === 'cash') {
             if (is_null($this->amountPaid) || $this->amountPaid < $total) {
                 Notification::make()
-                    ->title('Uang pembayaran tidak mencukupi!')
+                    ->title('Uang Pembayaran Kurang')
+                    ->body('Jumlah uang yang dibayarkan kurang dari total belanja transaksi ini.')
                     ->danger()
                     ->send();
                 return;
@@ -248,7 +258,8 @@ class PosKasir extends Page
         $this->showSuccessModal = true;
 
         Notification::make()
-            ->title('Transaksi berhasil disimpan!')
+            ->title('Transaksi Berhasil Disimpan')
+            ->body('Data transaksi penjualan produk berhasil disimpan dan stok produk telah terpotong.')
             ->success()
             ->send();
     }

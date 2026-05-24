@@ -122,6 +122,7 @@ class CreatePurchase extends Page
         if (!$this->supplierId) {
             Notification::make()
                 ->title('Pemasok Wajib Dipilih')
+                ->body('Silakan pilih pemasok terlebih dahulu untuk menyimpan data pembelian.')
                 ->danger()
                 ->send();
             return;
@@ -129,7 +130,8 @@ class CreatePurchase extends Page
 
         if (empty($activeItems)) {
             Notification::make()
-                ->title('Minimal 1 produk dibeli dengan quantity > 0')
+                ->title('Produk Kosong')
+                ->body('Minimal pilih 1 produk yang ingin dibeli dengan jumlah kuantiti lebih dari 0.')
                 ->danger()
                 ->send();
             return;
@@ -165,7 +167,8 @@ class CreatePurchase extends Page
         });
 
         Notification::make()
-            ->title('Pembelian stok berhasil disimpan!')
+            ->title('Berhasil Menyimpan Pembelian')
+            ->body('Data pembelian stok produk berhasil disimpan dan stok telah ditambahkan.')
             ->success()
             ->send();
 

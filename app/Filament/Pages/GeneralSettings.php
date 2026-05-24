@@ -90,7 +90,8 @@ class GeneralSettings extends Page implements HasForms
 
         Notification::make()
             ->success()
-            ->title('Pengaturan berhasil disimpan')
+            ->title('Pengaturan Berhasil Disimpan')
+            ->body('Semua konfigurasi pengaturan umum branding aplikasi berhasil diperbarui.')
             ->send();
     }
 }
