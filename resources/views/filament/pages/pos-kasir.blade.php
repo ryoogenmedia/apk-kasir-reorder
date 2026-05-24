@@ -39,10 +39,12 @@
             <div class="pos-product-grid">
                 <div class="pos-grid">
                     @forelse ($this->getProducts() as $product)
+                        @php $outOfStock = $product->stock <= 0; @endphp
                         <button
-                            wire:click="addToCart({{ $product->id }})"
+                            @if(!$outOfStock) wire:click="addToCart({{ $product->id }})" @endif
                             wire:key="prod-{{ $product->id }}"
-                            class="pos-card"
+                            class="pos-card {{ $outOfStock ? 'pos-card-disabled' : '' }}"
+                            {{ $outOfStock ? 'disabled' : '' }}
                         >
                             <div class="pos-card-img">
                                 @if ($product->image)
@@ -55,22 +57,40 @@
                                     </div>
                                 @endif
 
-                                @if ($product->stock <= $product->low_stock_threshold)
+                                {{-- Badge stok habis / stok menipis --}}
+                                @if ($outOfStock)
+                                    <div class="pos-out-of-stock-overlay">
+                                        <span class="pos-out-of-stock-label">
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-1px;margin-right:3px">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                            </svg>
+                                            Stok Habis
+                                        </span>
+                                    </div>
+                                @elseif ($product->stock <= $product->low_stock_threshold)
                                     <span class="pos-stock-badge">Sisa {{ $product->stock }}</span>
                                 @endif
 
-                                <div class="pos-card-overlay">
-                                    <div class="pos-card-add-icon">
-                                        <svg width="18" height="18" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
+                                @if (!$outOfStock)
+                                    <div class="pos-card-overlay">
+                                        <div class="pos-card-add-icon">
+                                            <svg width="18" height="18" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
                             <div class="pos-card-info">
                                 <p class="pos-card-name">{{ $product->name }}</p>
                                 <p class="pos-card-category">{{ $product->category->name ?? '—' }}</p>
-                                <p class="pos-card-price">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                                <p class="pos-card-price {{ $outOfStock ? 'pos-card-price-disabled' : '' }}">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                                <p class="pos-card-stock {{ $outOfStock ? 'pos-card-stock-empty' : ($product->stock <= $product->low_stock_threshold ? 'pos-card-stock-low' : 'pos-card-stock-ok') }}">
+                                    <svg width="9" height="9" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-1px;margin-right:2px">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0v10l-8 4m-8-4V7"/>
+                                    </svg>
+                                    {{ $outOfStock ? 'Habis' : 'Stok: ' . $product->stock }}
+                                </p>
                             </div>
                         </button>
                     @empty

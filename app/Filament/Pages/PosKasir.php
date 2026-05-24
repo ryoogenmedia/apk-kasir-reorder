@@ -63,7 +63,6 @@ class PosKasir extends Page
         return Product::query()
             ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->when($this->selectedCategory, fn ($q) => $q->where('category_id', $this->selectedCategory))
-            ->where('stock', '>', 0)
             ->with('category')
             ->orderBy('name')
             ->get();

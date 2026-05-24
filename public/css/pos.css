@@ -224,6 +224,56 @@
     margin-top: 0.15rem;
     white-space: nowrap;
 }
+.pos-card-price-disabled {
+    color: #9ca3af;
+}
+
+/* Stok label di info card */
+.pos-card-stock {
+    font-size: 0.6rem;
+    font-weight: 600;
+    margin-top: 0.1rem;
+    white-space: nowrap;
+}
+.pos-card-stock-ok   { color: #16a34a; }
+.pos-card-stock-low  { color: #ea580c; }
+.pos-card-stock-empty { color: #dc2626; font-weight: 700; }
+
+/* Card disabled — stok habis */
+.pos-card-disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    filter: grayscale(35%);
+}
+.pos-card-disabled:hover {
+    transform: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05) !important;
+    border-color: #f0f0f0 !important;
+}
+.pos-card-disabled:active { transform: none !important; }
+
+/* Overlay merah "Stok Habis" di atas gambar */
+.pos-out-of-stock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(220, 38, 38, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.pos-out-of-stock-label {
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.2rem;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
 
 .pos-empty {
     grid-column: 1 / -1;
