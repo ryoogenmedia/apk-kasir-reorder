@@ -16,11 +16,17 @@ class RopCalculation extends Page
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Produk';
     protected static ?int $navigationSort = 3;
 
-    protected function getHeaderWidgets(): array
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+    }
 
+    protected function getHeaderWidgets(): array
     {
         return [
+            \App\Filament\Widgets\LowStockAlertWidget::class,
             \App\Filament\Widgets\RestockWidget::class,
+            \App\Filament\Widgets\RopChart::class,
         ];
     }
 
