@@ -86,6 +86,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
                 fn () => new HtmlString(view('filament.components.realtime-clock')->render()),
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => new HtmlString(view('filament.components.global-loader')->render()),
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
