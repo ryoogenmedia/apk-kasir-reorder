@@ -30,7 +30,7 @@ class OrderResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['owner', 'admin', 'kasir']);
+        return auth()->user()->hasAnyRole(['admin', 'kasir']);
     }
 
     public static function canCreate(): bool

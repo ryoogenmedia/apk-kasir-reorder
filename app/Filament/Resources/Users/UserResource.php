@@ -30,7 +30,7 @@ class UserResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth()->user();
-        return $user && $user->hasAnyRole(['owner', 'admin']);
+        return $user && $user->hasRole('admin');
     }
 
     public static function canCreate(): bool

@@ -26,7 +26,7 @@ class PurchaseResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['owner', 'admin']);
+        return auth()->user()->hasRole('admin');
     }
 
     public static function canCreate(): bool
