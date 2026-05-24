@@ -27,7 +27,7 @@ class LaporanPembelian extends Page implements HasTable
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole(['superadmin', 'owner']);
+        return auth()->user()->hasAnyRole(['owner', 'admin']);
     }
 
     public function table(Table $table): Table

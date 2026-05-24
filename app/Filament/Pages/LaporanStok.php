@@ -24,7 +24,7 @@ class LaporanStok extends Page implements HasTable
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole(['superadmin', 'owner', 'admin']);
+        return auth()->user()->hasAnyRole(['owner', 'admin']);
     }
 
     public function table(Table $table): Table

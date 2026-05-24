@@ -28,6 +28,26 @@ class OrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['owner', 'admin', 'kasir']);
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
+
     protected static int $globalSearchResultsLimit = 5;
 
     public static function form(Schema $schema): Schema

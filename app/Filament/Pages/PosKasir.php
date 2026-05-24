@@ -26,6 +26,11 @@ class PosKasir extends Page
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
     protected static ?int $navigationSort = 1;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+    }
+
     // Keranjang belanja: [product_id => [name, price, qty, subtotal, image]]
     public array $cart = [];
 

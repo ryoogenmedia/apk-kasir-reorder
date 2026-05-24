@@ -27,7 +27,7 @@ class LaporanShift extends Page implements HasTable
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole(['superadmin', 'owner', 'kasir']);
+        return auth()->user()->hasAnyRole(['owner', 'admin', 'kasir']);
     }
 
     public function table(Table $table): Table

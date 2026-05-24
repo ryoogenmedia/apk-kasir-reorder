@@ -28,7 +28,7 @@ class RopCalculation extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+        return auth()->user()->hasAnyRole(['owner', 'admin']);
     }
 
     public function mount(): void
