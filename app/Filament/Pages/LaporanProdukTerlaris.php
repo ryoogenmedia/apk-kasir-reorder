@@ -38,7 +38,7 @@ class LaporanProdukTerlaris extends Page implements HasTable
                 OrderItem::query()
                     ->select('product_id')
                     ->selectRaw('SUM(quantity) as total_qty')
-                    ->selectRaw('SUM(order_items.price * quantity) as total_revenue')
+                    ->selectRaw('SUM(order_items.unit_price * quantity) as total_revenue')
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->groupBy('product_id')
                     ->orderByDesc('total_qty')
