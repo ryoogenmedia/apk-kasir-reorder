@@ -9,7 +9,7 @@ use BackedEnum;
 
 class RopCalculation extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-trend-up';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-trending-up';
     protected static ?string $navigationLabel = 'ROP';
     protected static ?string $title = 'Reorder Point (ROP)';
     protected string $view = 'filament.pages.rop-calculation';
