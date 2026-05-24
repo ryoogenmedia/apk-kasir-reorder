@@ -29,6 +29,21 @@ class PurchaseResource extends Resource
         return auth()->user()->hasAnyRole(['owner', 'admin']);
     }
 
+    public static function canCreate(): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     protected static ?string $recordTitleAttribute = 'id';
