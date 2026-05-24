@@ -29,6 +29,17 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('payment_method')
                     ->label('Metode Bayar')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'cash' => 'success',
+                        'qris' => 'info',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'cash' => 'Tunai',
+                        'qris' => 'QRIS',
+                        default => ucfirst($state),
+                    })
                     ->searchable(),
                 TextColumn::make('status')
                     ->label('Status')
@@ -44,8 +55,21 @@ class OrdersTable
             ->filters([
                 //
             ])
-            ->recordActions([
-                EditAction::make(),
+            ->actions([
+                \Filament\Tables\Actions\Action::make('view_qris_proof')
+                    ->label('Bukti QRIS')
+                    ->icon('heroicon-o-qr-code')
+                    ->color('success')
+                    ->modalHeading('Bukti Pembayaran QRIS')
+                    ->modalContent(fn ($record) => view('filament.components.proof-modal', ['image' => $record->qris_proof]))
+                    ->visible(fn ($record) => $record->payment_method === 'qris' && !empty($record->qris_proof)),
+                \Filament\Tables\Actions\Action::make('print_receipt')
+                    ->label('Cetak Struk')
+                    ->icon('heroicon-o-printer')
+                    ->color('info')
+                    ->url(fn ($record) => "/admin/orders/receipt/{$record->id}")
+                    ->openUrlInNewTab(),
+                \Filament\Tables\Actions\EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

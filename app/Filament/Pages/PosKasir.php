@@ -12,9 +12,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use BackedEnum;
 use UnitEnum;
+use Livewire\WithFileUploads;
 
 class PosKasir extends Page
 {
+    use WithFileUploads;
+
     protected string $view = 'filament.pages.pos-kasir';
 
     protected static ?string $navigationLabel = 'Kasir POS';
@@ -32,6 +35,17 @@ class PosKasir extends Page
 
     // Metode pembayaran
     public string $paymentMethod = 'cash';
+
+    // Pembayaran Cash
+    public ?float $amountPaid = null;
+    public ?float $changeAmount = 0;
+
+    // Upload Bukti QRIS (opsional)
+    public $qrisProofFile;
+
+    // State Popup Transaksi
+    public bool $showSuccessModal = false;
+    public array $lastOrder = [];
 
     // Daftar kategori
     public array $categories = [];
@@ -124,6 +138,44 @@ class PosKasir extends Page
         $this->cart = [];
     }
 
+    public function updatedAmountPaid($value): void
+    {
+        $this->calculateChange();
+    }
+
+    public function calculateChange(): void
+    {
+        $total = $this->getTotal();
+        if ($this->amountPaid) {
+            $this->changeAmount = max(0, (float) $this->amountPaid - $total);
+        } else {
+            $this->changeAmount = 0;
+        }
+    }
+
+    public function selectDenomination(float $amount): void
+    {
+        $this->amountPaid = $amount;
+        $this->calculateChange();
+    }
+
+    public function selectExactAmount(): void
+    {
+        $this->amountPaid = $this->getTotal();
+        $this->calculateChange();
+    }
+
+    public function resetCashier(): void
+    {
+        $this->showSuccessModal = false;
+        $this->cart = [];
+        $this->amountPaid = null;
+        $this->changeAmount = 0;
+        $this->qrisProofFile = null;
+        $this->paymentMethod = 'cash';
+        $this->lastOrder = [];
+    }
+
     public function processTransaction(): void
     {
         if (empty($this->cart)) {
@@ -131,13 +183,35 @@ class PosKasir extends Page
             return;
         }
 
-        DB::transaction(function () {
+        $total = $this->getTotal();
+
+        if ($this->paymentMethod === 'cash') {
+            if (is_null($this->amountPaid) || $this->amountPaid < $total) {
+                Notification::make()
+                    ->title('Uang pembayaran tidak mencukupi!')
+                    ->danger()
+                    ->send();
+                return;
+            }
+        }
+
+        $qrisPath = null;
+        if ($this->paymentMethod === 'qris' && $this->qrisProofFile) {
+            $qrisPath = $this->qrisProofFile->store('qris-proofs', 'public');
+        }
+
+        $orderData = [];
+
+        DB::transaction(function () use ($total, $qrisPath, &$orderData) {
             $order = Order::create([
                 'user_id'        => Auth::id(),
                 'order_date'     => now()->toDateString(),
-                'total_amount'   => $this->getTotal(),
+                'total_amount'   => $total,
                 'payment_method' => $this->paymentMethod,
                 'status'         => 'completed',
+                'qris_proof'     => $this->paymentMethod === 'qris' ? $qrisPath : null,
+                'amount_paid'    => $this->paymentMethod === 'cash' ? (float) $this->amountPaid : $total,
+                'change_amount'  => $this->paymentMethod === 'cash' ? (float) $this->changeAmount : 0,
             ]);
 
             foreach ($this->cart as $item) {
@@ -152,10 +226,26 @@ class PosKasir extends Page
                 // Kurangi stok
                 Product::where('id', $item['product_id'])->decrement('stock', $item['qty']);
             }
+
+            $orderData = [
+                'id' => $order->id,
+                'order_date' => $order->order_date->format('d/m/Y'),
+                'total_amount' => $order->total_amount,
+                'amount_paid' => $order->amount_paid,
+                'change_amount' => $order->change_amount,
+                'payment_method' => $order->payment_method === 'cash' ? 'Tunai' : 'QRIS',
+                'cashier_name' => Auth::user()->name,
+                'items' => collect($this->cart)->map(fn($item) => [
+                    'name' => $item['name'],
+                    'price' => $item['price'],
+                    'qty' => $item['qty'],
+                    'subtotal' => $item['subtotal'],
+                ])->toArray(),
+            ];
         });
 
-        $this->cart = [];
-        $this->paymentMethod = 'cash';
+        $this->lastOrder = $orderData;
+        $this->showSuccessModal = true;
 
         Notification::make()
             ->title('Transaksi berhasil disimpan!')

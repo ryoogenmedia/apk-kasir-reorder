@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use App\Models\Product;
@@ -44,6 +45,12 @@ class PurchaseForm
                             ->prefix('Rp')
                             ->default(0.0)
                             ->readonly(),
+                        FileUpload::make('proof_image')
+                            ->label('Bukti Transaksi (Foto)')
+                            ->image()
+                            ->directory('purchase-proofs')
+                            ->columnSpanFull()
+                            ->nullable(),
                     ])->columns(2),
 
                 Section::make('Item Pembelian')

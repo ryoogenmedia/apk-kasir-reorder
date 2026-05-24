@@ -158,15 +158,62 @@
                 {{-- Metode Pembayaran --}}
                 <div>
                     <span class="pos-pay-label">Metode Pembayaran</span>
-                    <div class="pos-pay-methods">
-                        @foreach (['cash' => '💵 Tunai', 'transfer' => '🏦 Transfer', 'qris' => '📱 QRIS', 'debit' => '💳 Debit'] as $val => $label)
+                    <div class="pos-pay-methods" style="grid-template-columns: 1fr 1fr;">
+                        @foreach (['cash' => '💵 Tunai', 'qris' => '📱 QRIS'] as $val => $label)
                             <button
+                                type="button"
                                 wire:click="$set('paymentMethod', '{{ $val }}')"
                                 class="pos-pay-btn {{ $paymentMethod === $val ? 'active' : '' }}"
                             >{{ $label }}</button>
                         @endforeach
                     </div>
                 </div>
+
+                {{-- Cash Payment Inputs --}}
+                @if ($paymentMethod === 'cash')
+                    <div class="pos-cash-container">
+                        <div class="pos-input-group">
+                            <span class="pos-pay-label" style="margin-bottom:0">Uang Dibayar (Rp)</span>
+                            <input
+                                type="number"
+                                wire:model.live="amountPaid"
+                                placeholder="Masukkan nominal..."
+                                class="pos-cash-input-field"
+                            />
+                        </div>
+                        <div class="pos-denominations-grid">
+                            <button type="button" wire:click="selectExactAmount" class="pos-denom-btn" style="grid-column: span 2; background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">Uang Pas</button>
+                            <button type="button" wire:click="selectDenomination(1000)" class="pos-denom-btn">1K</button>
+                            <button type="button" wire:click="selectDenomination(2000)" class="pos-denom-btn">2K</button>
+                            <button type="button" wire:click="selectDenomination(5000)" class="pos-denom-btn">5K</button>
+                            <button type="button" wire:click="selectDenomination(10000)" class="pos-denom-btn">10K</button>
+                            <button type="button" wire:click="selectDenomination(20000)" class="pos-denom-btn">20K</button>
+                            <button type="button" wire:click="selectDenomination(50000)" class="pos-denom-btn">50K</button>
+                            <button type="button" wire:click="selectDenomination(100000)" class="pos-denom-btn">100K</button>
+                        </div>
+                        <div class="pos-change-display">
+                            <span>Kembalian:</span>
+                            <span>Rp {{ number_format($changeAmount, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- QRIS Payment Inputs --}}
+                @if ($paymentMethod === 'qris')
+                    <div class="pos-qris-container">
+                        <span class="pos-pay-label" style="margin-bottom:0">Bukti Pembayaran QRIS (Foto, Opsional)</span>
+                        <input
+                            type="file"
+                            wire:model="qrisProofFile"
+                            class="pos-file-input"
+                            accept="image/*"
+                        />
+                        <div wire:loading wire:target="qrisProofFile" class="text-xs text-gray-500 mt-1" style="color: #6b7280; font-size: 0.7rem;">Mengunggah...</div>
+                        @if ($qrisProofFile)
+                            <div class="text-xs text-green-600 mt-1" style="color: #10b981; font-size: 0.7rem;">✓ File siap diunggah</div>
+                        @endif
+                    </div>
+                @endif
 
                 <hr class="pos-divider">
 
@@ -205,4 +252,75 @@
         </div>
 
     </div>
+
+    {{-- Success Popup Modal --}}
+    @if ($showSuccessModal && $lastOrder)
+        <div class="pos-modal-overlay">
+            <div class="pos-modal-content">
+                <div class="pos-modal-header">
+                    <svg style="display:inline-block;margin-bottom:4px" width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="pos-modal-title">Transaksi Berhasil!</div>
+                </div>
+                <div class="pos-modal-body">
+                    <div class="pos-receipt-summary">
+                        <div class="pos-receipt-title">STRUK PENJUALAN</div>
+                        <div class="pos-receipt-row">
+                            <span>No. Transaksi:</span>
+                            <span>#{{ $lastOrder['id'] }}</span>
+                        </div>
+                        <div class="pos-receipt-row">
+                            <span>Tanggal:</span>
+                            <span>{{ $lastOrder['order_date'] }}</span>
+                        </div>
+                        <div class="pos-receipt-row">
+                            <span>Kasir:</span>
+                            <span>{{ $lastOrder['cashier_name'] }}</span>
+                        </div>
+                        <div class="pos-receipt-row">
+                            <span>Metode Bayar:</span>
+                            <span>{{ $lastOrder['payment_method'] }}</span>
+                        </div>
+                        <div class="pos-receipt-divider"></div>
+                        @foreach ($lastOrder['items'] as $item)
+                            <div class="pos-receipt-row">
+                                <span>{{ $item['name'] }} (x{{ $item['qty'] }})</span>
+                                <span>Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</span>
+                            </div>
+                        @endforeach
+                        <div class="pos-receipt-divider"></div>
+                        <div class="pos-receipt-row" style="font-weight: 700;">
+                            <span>TOTAL:</span>
+                            <span>Rp {{ number_format($lastOrder['total_amount'], 0, ',', '.') }}</span>
+                        </div>
+                        <div class="pos-receipt-row">
+                            <span>Bayar:</span>
+                            <span>Rp {{ number_format($lastOrder['amount_paid'], 0, ',', '.') }}</span>
+                        </div>
+                        <div class="pos-receipt-row" style="color: #10b981; font-weight: 700;">
+                            <span>Kembalian:</span>
+                            <span>Rp {{ number_format($lastOrder['change_amount'], 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pos-modal-footer">
+                    <button
+                        type="button"
+                        onclick="window.open('/admin/orders/receipt/{{ $lastOrder['id'] }}', '_blank')"
+                        class="pos-modal-btn print"
+                    >
+                        Cetak Struk
+                    </button>
+                    <button
+                        type="button"
+                        wire:click="resetCashier"
+                        class="pos-modal-btn new-trans"
+                    >
+                        Transaksi Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-filament-panels::page>
