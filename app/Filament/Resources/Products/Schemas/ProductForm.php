@@ -47,6 +47,11 @@ class ProductForm
                     ->required()
                     ->numeric()
                     ->default(5),
+                TextInput::make('max_stock_threshold')
+                    ->label('Batas Stok Maksimum')
+                    ->required()
+                    ->numeric()
+                    ->default(100),
             ]);
     }
 }
