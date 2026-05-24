@@ -30,8 +30,12 @@ class ProductsTable
                 TextColumn::make('name')
                     ->label('Nama Produk')
                     ->searchable(),
+                TextColumn::make('purchase_price')
+                    ->label('Harga Beli')
+                    ->money('IDR')
+                    ->sortable(),
                 TextColumn::make('price')
-                    ->label('Harga')
+                    ->label('Harga Jual')
                     ->money('IDR')
                     ->sortable(),
                 TextColumn::make('stock')

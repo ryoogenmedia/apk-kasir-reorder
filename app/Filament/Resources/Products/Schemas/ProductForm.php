@@ -33,7 +33,12 @@ class ProductForm
                     ->label('Deskripsi')
                     ->columnSpanFull(),
                 TextInput::make('price')
-                    ->label('Harga')
+                    ->label('Harga Jual')
+                    ->required()
+                    ->numeric()
+                    ->prefix('Rp'),
+                TextInput::make('purchase_price')
+                    ->label('Harga Beli')
                     ->required()
                     ->numeric()
                     ->prefix('Rp'),
