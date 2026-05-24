@@ -40,6 +40,9 @@ class PosKasir extends Page
     public ?float $amountPaid = null;
     public ?float $changeAmount = 0;
 
+    // Hitungan berapa kali setiap pecahan ditekan
+    public array $denominationCounts = [];
+
     // Upload Bukti QRIS (opsional)
     public $qrisProofFile;
 
@@ -160,13 +163,34 @@ class PosKasir extends Page
 
     public function selectDenomination(float $amount): void
     {
+        // Legacy - tetap bisa dipakai (set langsung)
         $this->amountPaid = $amount;
         $this->calculateChange();
+    }
+
+    public function addDenomination(float $amount): void
+    {
+        // Akumulasi: tambahkan nilai ke amountPaid
+        $this->amountPaid = ((float) ($this->amountPaid ?? 0)) + $amount;
+
+        // Hitung berapa kali pecahan ini ditekan
+        $key = (string)(int)$amount;
+        $this->denominationCounts[$key] = ($this->denominationCounts[$key] ?? 0) + 1;
+
+        $this->calculateChange();
+    }
+
+    public function resetDenominations(): void
+    {
+        $this->amountPaid = null;
+        $this->changeAmount = 0;
+        $this->denominationCounts = [];
     }
 
     public function selectExactAmount(): void
     {
         $this->amountPaid = $this->getTotal();
+        $this->denominationCounts = [];
         $this->calculateChange();
     }
 
@@ -176,6 +200,7 @@ class PosKasir extends Page
         $this->cart = [];
         $this->amountPaid = null;
         $this->changeAmount = 0;
+        $this->denominationCounts = [];
         $this->qrisProofFile = null;
         $this->paymentMethod = 'cash';
         $this->lastOrder = [];

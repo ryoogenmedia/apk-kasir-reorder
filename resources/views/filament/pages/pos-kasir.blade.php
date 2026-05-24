@@ -183,14 +183,35 @@
                         </div>
                         <div class="pos-denominations-grid">
                             <button type="button" wire:click="selectExactAmount" class="pos-denom-btn" style="grid-column: span 2; background: #dbeafe; color: #1e40af; border-color: #bfdbfe;">Uang Pas</button>
-                            <button type="button" wire:click="selectDenomination(1000)" class="pos-denom-btn">1K</button>
-                            <button type="button" wire:click="selectDenomination(2000)" class="pos-denom-btn">2K</button>
-                            <button type="button" wire:click="selectDenomination(5000)" class="pos-denom-btn">5K</button>
-                            <button type="button" wire:click="selectDenomination(10000)" class="pos-denom-btn">10K</button>
-                            <button type="button" wire:click="selectDenomination(20000)" class="pos-denom-btn">20K</button>
-                            <button type="button" wire:click="selectDenomination(50000)" class="pos-denom-btn">50K</button>
-                            <button type="button" wire:click="selectDenomination(100000)" class="pos-denom-btn">100K</button>
+                            @foreach ([1000, 2000, 5000, 10000, 20000, 50000, 100000] as $denom)
+                                @php
+                                    $denomKey = (string)$denom;
+                                    $count = $denominationCounts[$denomKey] ?? 0;
+                                    $label = match($denom) {
+                                        1000 => '1K', 2000 => '2K', 5000 => '5K', 10000 => '10K',
+                                        20000 => '20K', 50000 => '50K', 100000 => '100K', default => $denom
+                                    };
+                                @endphp
+                                <button
+                                    type="button"
+                                    wire:click="addDenomination({{ $denom }})"
+                                    class="pos-denom-btn {{ $count > 0 ? 'pos-denom-active' : '' }}"
+                                >
+                                    {{ $label }}
+                                    @if ($count > 0)
+                                        <span class="pos-denom-count">×{{ $count }}</span>
+                                    @endif
+                                </button>
+                            @endforeach
                         </div>
+                        @if (!empty(array_filter($denominationCounts)))
+                            <button type="button" wire:click="resetDenominations" class="pos-denom-reset-btn">
+                                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-1px;margin-right:3px">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Reset Nominal
+                            </button>
+                        @endif
                         <div class="pos-change-display">
                             <span>Kembalian:</span>
                             <span>Rp {{ number_format($changeAmount, 0, ',', '.') }}</span>
@@ -202,16 +223,39 @@
                 @if ($paymentMethod === 'qris')
                     <div class="pos-qris-container">
                         <span class="pos-pay-label" style="margin-bottom:0">Bukti Pembayaran QRIS (Foto, Opsional)</span>
-                        <input
-                            type="file"
-                            wire:model="qrisProofFile"
-                            class="pos-file-input"
-                            accept="image/*"
-                        />
-                        <div wire:loading wire:target="qrisProofFile" class="text-xs text-gray-500 mt-1" style="color: #6b7280; font-size: 0.7rem;">Mengunggah...</div>
+
+                        {{-- Preview Gambar jika sudah dipilih --}}
                         @if ($qrisProofFile)
-                            <div class="text-xs text-green-600 mt-1" style="color: #10b981; font-size: 0.7rem;">✓ File siap diunggah</div>
+                            <div class="pos-qris-preview">
+                                <img src="{{ $qrisProofFile->temporaryUrl() }}" alt="Preview QRIS" class="pos-qris-preview-img" />
+                                <div class="pos-qris-preview-label">
+                                    <svg width="12" height="12" fill="none" stroke="#10b981" viewBox="0 0 24 24" style="display:inline;vertical-align:-1px;margin-right:3px">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Bukti siap diunggah
+                                </div>
+                            </div>
                         @endif
+
+                        <div class="pos-qris-upload-box {{ $qrisProofFile ? 'pos-qris-has-file' : '' }}">
+                            <input
+                                type="file"
+                                wire:model="qrisProofFile"
+                                class="pos-file-input"
+                                accept="image/*"
+                            />
+                            @if (!$qrisProofFile)
+                                <div class="pos-qris-placeholder">
+                                    <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>Pilih atau seret foto bukti</span>
+                                </div>
+                            @else
+                                <div class="pos-qris-change-label">Ganti Foto</div>
+                            @endif
+                        </div>
+                        <div wire:loading wire:target="qrisProofFile" style="color: #6b7280; font-size: 0.7rem; margin-top: 0.25rem;">Mengunggah...</div>
                     </div>
                 @endif
 
