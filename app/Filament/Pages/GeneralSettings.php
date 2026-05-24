@@ -31,7 +31,7 @@ class GeneralSettings extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+        return auth()->user()->hasRole('owner');
     }
 
     public function mount(): void

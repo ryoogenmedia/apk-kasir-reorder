@@ -21,7 +21,7 @@ class LowStockAlertWidget extends TableWidget
     public static function canView(): bool
     {
         $user = auth()->user();
-        return $user && $user->hasAnyRole(['super_admin', 'admin', 'owner']);
+        return $user && $user->hasAnyRole(['owner', 'admin', 'cashier']);
     }
 
     public function table(Table $table): Table

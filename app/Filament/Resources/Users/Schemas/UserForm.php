@@ -29,7 +29,6 @@ class UserForm
                     ->label('Role')
                     ->options([
                         'owner' => 'Owner',
-                        'super_admin' => 'Superadmin',
                         'admin' => 'Admin',
                         'cashier' => 'Kasir',
                     ])
