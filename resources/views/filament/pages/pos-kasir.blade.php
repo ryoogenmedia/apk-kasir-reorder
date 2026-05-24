@@ -367,4 +367,26 @@
             </div>
         </div>
     @endif
+
+    {{-- Sticky searchbar shadow on scroll --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchbar = document.querySelector('.pos-searchbar');
+            if (!searchbar) return;
+
+            // Filament wraps content in a scrollable container
+            const scrollTarget = searchbar.closest('[data-overlayscrollbars-viewport]')
+                ?? searchbar.closest('.fi-main-ctn')
+                ?? window;
+
+            const onScroll = () => {
+                const scrollTop = scrollTarget === window
+                    ? window.scrollY
+                    : scrollTarget.scrollTop;
+                searchbar.classList.toggle('is-sticky', scrollTop > 10);
+            };
+
+            scrollTarget.addEventListener('scroll', onScroll, { passive: true });
+        });
+    </script>
 </x-filament-panels::page>
