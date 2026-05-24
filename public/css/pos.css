@@ -21,11 +21,11 @@
     align-items: center;
     /* Sticky — tetap di atas saat scroll produk */
     position: sticky;
-    top: 0;
+    top: -0.5rem;   /* -0.5rem kompensasi margin negatif */
     z-index: 30;
     background: var(--fi-bg, #f9fafb);
-    padding: 0.5rem 0;
-    margin: -0.5rem 0 0;
+    padding: 0.625rem 0;
+    margin: -0.625rem 0 0;
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
