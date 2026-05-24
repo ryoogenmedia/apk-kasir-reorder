@@ -13,6 +13,11 @@ class LogoSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed default shop settings
+        Setting::updateOrCreate(['key' => 'shop_name'], ['value' => 'Toko Udin dan Hj Lina']);
+        Setting::updateOrCreate(['key' => 'shop_address'], ['value' => 'Jl.mesjid nurul iman no.08']);
+        Setting::updateOrCreate(['key' => 'shop_phone'], ['value' => '081342763816']);
+
         // Pastikan folder branding ada
         if (!Storage::disk('public')->exists('branding')) {
             Storage::disk('public')->makeDirectory('branding');

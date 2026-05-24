@@ -40,6 +40,9 @@ class GeneralSettings extends Page implements HasForms
             'site_logo' => Setting::where('key', 'site_logo')->first()?->value,
             'site_favicon' => Setting::where('key', 'site_favicon')->first()?->value,
             'site_name' => Setting::where('key', 'site_name')->first()?->value ?? 'POS Kasir',
+            'shop_name' => Setting::where('key', 'shop_name')->first()?->value ?? 'Warung Campuran',
+            'shop_address' => Setting::where('key', 'shop_address')->first()?->value ?? 'Jl. Merdeka No. 123',
+            'shop_phone' => Setting::where('key', 'shop_phone')->first()?->value ?? '081234567890',
         ]);
     }
 
@@ -61,6 +64,19 @@ class GeneralSettings extends Page implements HasForms
                             ->disk('public'),
                         TextInput::make('site_name')
                             ->label('Nama Aplikasi')
+                            ->required(),
+                    ]),
+                \Filament\Schemas\Components\Section::make('Informasi Toko')
+                    ->schema([
+                        TextInput::make('shop_name')
+                            ->label('Nama Toko')
+                            ->required(),
+                        TextInput::make('shop_address')
+                            ->label('Alamat Toko')
+                            ->required(),
+                        TextInput::make('shop_phone')
+                            ->label('Nomor Ponsel Toko')
+                            ->tel()
                             ->required(),
                     ])
             ])

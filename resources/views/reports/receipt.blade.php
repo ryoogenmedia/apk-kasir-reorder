@@ -80,10 +80,16 @@
         <button onclick="window.close()" style="padding: 6px 12px; font-weight: bold; background: #9ca3af; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">Tutup</button>
     </div>
 
+    @php
+        $shopName = \App\Models\Setting::where('key', 'shop_name')->first()?->value ?? 'Warung Campuran';
+        $shopAddress = \App\Models\Setting::where('key', 'shop_address')->first()?->value ?? 'Jl. Merdeka No. 123';
+        $shopPhone = \App\Models\Setting::where('key', 'shop_phone')->first()?->value ?? '081234567890';
+    @endphp
+
     <div class="header text-center">
-        <h2>TOKO KASIR</h2>
-        <p>Jl. Contoh No. 123, Indonesia</p>
-        <p>Telp: 0812-3456-7890</p>
+        <h2>{{ $shopName }}</h2>
+        <p>{{ $shopAddress }}</p>
+        <p>Telp: {{ $shopPhone }}</p>
     </div>
 
     <div class="divider"></div>

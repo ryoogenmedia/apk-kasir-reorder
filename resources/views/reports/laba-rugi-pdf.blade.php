@@ -12,8 +12,20 @@
     </style>
 </head>
 <body>
-    <h2>Laporan Laba Rugi</h2>
-    <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
+    @php
+        $shopName = \App\Models\Setting::where('key', 'shop_name')->first()?->value ?? 'Warung Campuran';
+        $shopAddress = \App\Models\Setting::where('key', 'shop_address')->first()?->value ?? 'Jl. Merdeka No. 123';
+        $shopPhone = \App\Models\Setting::where('key', 'shop_phone')->first()?->value ?? '081234567890';
+    @endphp
+    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+        <h2 style="margin: 0; font-size: 18px; text-transform: uppercase;">{{ $shopName }}</h2>
+        <p style="margin: 5px 0 0 0; font-size: 11px;">{{ $shopAddress }} | Telp: {{ $shopPhone }}</p>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h3 style="margin: 0; font-size: 14px; text-transform: uppercase;">Laporan Laba Rugi</h3>
+        <p style="margin: 3px 0 0 0; font-size: 11px;">Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
+    </div>
 
     <table>
         <thead>
