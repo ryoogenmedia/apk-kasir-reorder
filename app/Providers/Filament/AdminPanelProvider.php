@@ -96,6 +96,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\SalesChart::class,
                 \App\Filament\Widgets\CategorySalesChart::class,
                 \App\Filament\Widgets\ProfitPercentageChart::class,
+                \App\Filament\Widgets\LowStockAlertWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

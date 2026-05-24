@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Order;
 use App\Models\Purchase;
+use App\Models\Product;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -58,6 +59,12 @@ class StatsOverview extends StatsOverviewWidget
         $totalPengeluaran = (float) Purchase::sum('total_amount');
         $balance = $totalPemasukan - $totalPengeluaran;
 
+        $stockStats = Product::query()
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) as out_of_stock, SUM(CASE WHEN stock > 0 AND stock <= low_stock_threshold THEN 1 ELSE 0 END) as low_stock')
+            ->first();
+        $totalProducts = $stockStats->total ?? 0;
+        $lowStockTotal = ($stockStats->out_of_stock ?? 0) + ($stockStats->low_stock ?? 0);
+
         $weeklyPemasukanQuery = Order::query()
             ->where('order_date', '>=', Carbon::now()->subDays(6)->startOfDay())
             ->select(DB::raw('DATE(order_date) as date'), DB::raw('SUM(total_amount) as amount'))
@@ -93,6 +100,13 @@ class StatsOverview extends StatsOverviewWidget
             Stat::make('Balance (Net)', 'Rp ' . number_format($balance, 0, ',', '.'))
                 ->description($balance >= 0 ? 'Surplus Keuangan' : 'Defisit Keuangan')
                 ->color($balance >= 0 ? 'info' : 'warning'),
+
+            Stat::make('Total Produk', $totalProducts)
+                ->color('gray'),
+
+            Stat::make('Stok Menipis / Habis', $lowStockTotal)
+                ->description(($stockStats->out_of_stock ?? 0) . ' habis')
+                ->color($lowStockTotal > 0 ? 'danger' : 'success'),
         ];
     }
 }

@@ -15,6 +15,8 @@ class ProfitPercentageChart extends ChartWidget
     
     protected static ?int $sort = 4;
 
+    protected int | string | array $columnSpan = 'full';
+
     protected ?string $pollingInterval = '120s';
 
     public static function canView(): bool

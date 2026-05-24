@@ -10,17 +10,17 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $owner = Role::firstOrCreate(['name' => 'owner', 'guard_name' => 'web']);
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $cashier = Role::firstOrCreate(['name' => 'cashier', 'guard_name' => 'web']);
 
-        $superAdminUser = User::firstOrCreate([
-            'email' => 'superadmin@example.com',
+        $ownerUser = User::firstOrCreate([
+            'email' => 'owner@example.com',
         ], [
-            'name' => 'Super Admin',
+            'name' => 'Owner User',
             'password' => bcrypt('password'),
         ]);
-        $superAdminUser->assignRole($superAdmin);
+        $ownerUser->assignRole($owner);
 
         $adminUser = User::firstOrCreate([
             'email' => 'admin@example.com',
