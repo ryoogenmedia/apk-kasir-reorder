@@ -22,21 +22,21 @@ class OrderPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['owner', 'cashier']);
+        return $user->hasAnyRole(['admin', 'cashier']);
     }
 
     public function update(User $user, Order $order): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasAnyRole(['admin', 'cashier']);
     }
 
     public function delete(User $user, Order $order): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 }

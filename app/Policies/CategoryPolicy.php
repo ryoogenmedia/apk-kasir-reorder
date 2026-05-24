@@ -22,21 +22,21 @@ class CategoryPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function update(User $user, Category $category): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 }

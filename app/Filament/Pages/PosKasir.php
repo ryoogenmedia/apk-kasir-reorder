@@ -28,7 +28,7 @@ class PosKasir extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+        return auth()->user()->hasAnyRole(['admin', 'cashier']);
     }
 
     // Keranjang belanja: [product_id => [name, price, qty, subtotal, image]]

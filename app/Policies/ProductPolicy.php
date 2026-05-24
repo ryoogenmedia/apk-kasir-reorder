@@ -22,21 +22,21 @@ class ProductPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function update(User $user, Product $product): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function delete(User $user, Product $product): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->hasRole('owner');
+        return $user->hasRole('admin');
     }
 }

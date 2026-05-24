@@ -30,17 +30,17 @@ class OrderResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+        return auth()->user()->hasAnyRole(['admin', 'cashier']);
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+        return auth()->user()->hasAnyRole(['admin', 'cashier']);
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->hasAnyRole(['admin', 'kasir']);
+        return auth()->user()->hasAnyRole(['admin', 'cashier']);
     }
 
     public static function canDelete($record): bool
