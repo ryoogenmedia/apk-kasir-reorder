@@ -18,6 +18,8 @@ class RopChart extends ChartWidget
 
     protected ?string $pollingInterval = '60s';
 
+    public ?string $filter = 'all';
+
     protected function getFilters(): ?array
     {
         $categories = Cache::remember('rop_chart_categories', 300, function () {
@@ -86,6 +88,7 @@ class RopChart extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'indexAxis' => 'y',
             'plugins' => [
                 'legend' => [
                     'display' => true,
@@ -97,13 +100,13 @@ class RopChart extends ChartWidget
                 ],
             ],
             'scales' => [
-                'y' => [
+                'x' => [
                     'beginAtZero' => true,
                     'grid' => [
                         'color' => 'rgba(156, 163, 175, 0.1)',
                     ],
                 ],
-                'x' => [
+                'y' => [
                     'grid' => [
                         'display' => false,
                     ],
