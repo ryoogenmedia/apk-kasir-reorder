@@ -12,12 +12,59 @@ class StockTrendChart extends ChartWidget
 {
     protected static bool $isLazy = true;
 
-    protected ?string $heading = 'Grafik Tren Stok Menipis & Habis (30 Hari Terakhir)';
     protected static ?int $sort = 5;
 
     protected int | string | array $columnSpan = 'full';
 
     protected ?string $pollingInterval = '120s';
+
+    public ?string $filter = 'all';
+
+    public function getHeading(): ?string
+    {
+        $activeFilter = $this->filter;
+        if (!$activeFilter || $activeFilter === 'all') {
+            return 'Grafik Tren Stok Menipis & Habis (30 Hari Terakhir)';
+        }
+
+        [$year, $month] = explode('-', $activeFilter);
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        return 'Grafik Tren Stok Menipis & Habis - ' . ($monthNames[(int)$month] ?? '') . ' ' . $year;
+    }
+
+    protected function getFilters(): ?array
+    {
+        $months = \App\Models\Order::query()
+            ->selectRaw('DISTINCT YEAR(order_date) as year, MONTH(order_date) as month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+
+        $options = ['all' => 'Semua Waktu (30 Hari Terakhir)'];
+        
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        foreach ($months as $row) {
+            $key = sprintf('%04d-%02d', $row->year, $row->month);
+            $options[$key] = $monthNames[$row->month] . ' ' . $row->year;
+        }
+
+        if (count($options) === 1) {
+            $year = date('Y');
+            $month = (int) date('m');
+            $options[sprintf('%04d-%02d', $year, $month)] = $monthNames[$month] . ' ' . $year;
+        }
+
+        return $options;
+    }
 
     public static function canView(): bool
     {
@@ -27,35 +74,73 @@ class StockTrendChart extends ChartWidget
 
     protected function getData(): array
     {
-        return Cache::remember('stock_trend_chart_30d', 120, function () {
+        $activeFilter = $this->filter;
+        $cacheKey = 'stock_trend_chart_filter_' . ($activeFilter ?? 'all');
+
+        return Cache::remember($cacheKey, 120, function () use ($activeFilter) {
             // Get all products with their current stock and low stock threshold
             $products = Product::select('id', 'stock', 'low_stock_threshold')->get();
 
-            // Setup dates list for the last 30 days
-            $dates = [];
-            for ($i = 29; $i >= 0; $i--) {
-                $dates[29 - $i] = Carbon::now()->subDays($i)->format('Y-m-d');
+            if (!$activeFilter || $activeFilter === 'all') {
+                $startDate = Carbon::now()->subDays(29)->startOfDay();
+                $endDate = Carbon::now()->endOfDay();
+                $daysCount = 30;
+            } else {
+                [$year, $month] = explode('-', $activeFilter);
+                $startDate = Carbon::create($year, $month, 1)->startOfDay();
+                $endDate = Carbon::create($year, $month, 1)->endOfMonth()->endOfDay();
+                $daysCount = $startDate->daysInMonth;
             }
 
-            // Get order items quantity sold in the last 30 days per product per day
+            // Setup dates list for the selected period
+            $dates = [];
+            for ($i = 0; $i < $daysCount; $i++) {
+                if (!$activeFilter || $activeFilter === 'all') {
+                    $dates[$i] = Carbon::now()->subDays($daysCount - 1 - $i)->format('Y-m-d');
+                } else {
+                    $dates[$i] = $startDate->copy()->addDays($i)->format('Y-m-d');
+                }
+            }
+
+            // Get order items quantity sold in the selected period per product per day
             $orderItems = DB::table('order_items')
                 ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                ->where('orders.order_date', '>=', Carbon::now()->subDays(30)->startOfDay())
+                ->whereBetween('orders.order_date', [$startDate, $endDate])
                 ->select('order_items.product_id', 'order_items.quantity', DB::raw('DATE(orders.order_date) as date'))
                 ->get()
                 ->groupBy('product_id');
 
-            // Get purchase items quantity bought in the last 30 days per product per day
+            // Get purchase items quantity bought in the selected period per product per day
             $purchaseItems = DB::table('purchase_items')
                 ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
-                ->where('purchases.purchase_date', '>=', Carbon::now()->subDays(30)->startOfDay())
+                ->whereBetween('purchases.purchase_date', [$startDate, $endDate])
                 ->select('purchase_items.product_id', 'purchase_items.quantity', DB::raw('DATE(purchases.purchase_date) as date'))
                 ->get()
                 ->groupBy('product_id');
 
+            // Rollback stock calculations for past month filters
+            $salesAfter = collect();
+            $purchasesAfter = collect();
+
+            if ($activeFilter && $activeFilter !== 'all') {
+                $salesAfter = DB::table('order_items')
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->where('orders.order_date', '>', $endDate)
+                    ->select('order_items.product_id', DB::raw('SUM(order_items.quantity) as total'))
+                    ->groupBy('order_items.product_id')
+                    ->pluck('total', 'product_id');
+
+                $purchasesAfter = DB::table('purchase_items')
+                    ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+                    ->where('purchases.purchase_date', '>', $endDate)
+                    ->select('purchase_items.product_id', DB::raw('SUM(purchase_items.quantity) as total'))
+                    ->groupBy('purchase_items.product_id')
+                    ->pluck('total', 'product_id');
+            }
+
             // Initialize data counts
-            $menipisCounts = array_fill(0, 30, 0);
-            $habisCounts = array_fill(0, 30, 0);
+            $menipisCounts = array_fill(0, $daysCount, 0);
+            $habisCounts = array_fill(0, $daysCount, 0);
 
             foreach ($products as $product) {
                 $productId = $product->id;
@@ -64,12 +149,20 @@ class StockTrendChart extends ChartWidget
                 $productOrders = isset($orderItems[$productId]) ? $orderItems[$productId]->groupBy('date') : collect();
                 $productPurchases = isset($purchaseItems[$productId]) ? $purchaseItems[$productId]->groupBy('date') : collect();
                 
-                $currentStock = $product->stock;
+                // Starting stock level at the end of the period
+                if (!$activeFilter || $activeFilter === 'all') {
+                    $currentStock = $product->stock;
+                } else {
+                    $sa = (int) ($salesAfter[$productId] ?? 0);
+                    $pa = (int) ($purchasesAfter[$productId] ?? 0);
+                    $currentStock = max(0, $product->stock + $sa - $pa);
+                }
+
                 $stockOnDay = [];
-                $stockOnDay[29] = $currentStock;
+                $stockOnDay[$daysCount - 1] = $currentStock;
                 
                 // Calculate stock levels backwards
-                for ($i = 29; $i > 0; $i--) {
+                for ($i = $daysCount - 1; $i > 0; $i--) {
                     $date = $dates[$i];
                     
                     $sold = isset($productOrders[$date]) ? $productOrders[$date]->sum('quantity') : 0;
@@ -83,7 +176,7 @@ class StockTrendChart extends ChartWidget
                 }
                 
                 // Count menipis vs habis per day
-                for ($i = 0; $i < 30; $i++) {
+                for ($i = 0; $i < $daysCount; $i++) {
                     $stock = $stockOnDay[$i];
                     if ($stock == 0) {
                         $habisCounts[$i]++;
