@@ -37,15 +37,8 @@ class RopChart extends ChartWidget
                     'products.id',
                     'products.name',
                     'products.stock',
-                    DB::raw('COALESCE(sold.total_qty, 0) as total_sold_30_days'),
-                ])
-                ->leftJoin(DB::raw('(
-                    SELECT oi.product_id, SUM(oi.quantity) as total_qty
-                    FROM order_items oi
-                    INNER JOIN orders o ON o.id = oi.order_id
-                    WHERE o.order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-                    GROUP BY oi.product_id
-                ) as sold'), 'products.id', '=', 'sold.product_id');
+                    'products.low_stock_threshold',
+                ]);
 
             if ($activeFilter && $activeFilter !== 'all') {
                 $query->where('products.category_id', $activeFilter);
@@ -55,18 +48,12 @@ class RopChart extends ChartWidget
 
             $labels = [];
             $stocks = [];
-            $suggestedRops = [];
+            $lowStocks = [];
 
             foreach ($products as $product) {
                 $labels[] = $product->name;
                 $stocks[] = $product->stock;
-
-                $totalSold = $product->total_sold_30_days;
-                $avgDailyDemand = $totalSold / 30;
-                $leadTime = 3;
-                $safetyStock = 5;
-
-                $suggestedRops[] = (int) ceil(($avgDailyDemand * $leadTime) + $safetyStock);
+                $lowStocks[] = $product->low_stock_threshold;
             }
 
             return [
@@ -79,9 +66,9 @@ class RopChart extends ChartWidget
                         'borderWidth' => 0,
                     ],
                     [
-                        'label' => 'ROP Saran (Min. Stok)',
-                        'data' => $suggestedRops,
-                        'backgroundColor' => '#10b981',
+                        'label' => 'Batas Minimum Stok',
+                        'data' => $lowStocks,
+                        'backgroundColor' => '#f59e0b',
                         'borderRadius' => 6,
                         'borderWidth' => 0,
                     ],
