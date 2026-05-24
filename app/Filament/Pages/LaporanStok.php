@@ -8,7 +8,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 
