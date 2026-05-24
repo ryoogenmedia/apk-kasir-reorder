@@ -254,7 +254,7 @@
                 {{-- Action Buttons --}}
                 <div class="grid grid-cols-2 gap-3 mt-2">
                     <a 
-                        href="{{ PurchaseResource::getUrl('index') }}" 
+                        href="{{ \App\Filament\Resources\Purchases\PurchaseResource::getUrl('index') }}" 
                         class="w-full text-center py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-850 font-bold transition-colors"
                     >
                         Batal
