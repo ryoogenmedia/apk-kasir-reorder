@@ -45,6 +45,7 @@ class ProductSeeder extends Seeder
                     'price' => rand(10, 500) * 1000,
                     'stock' => rand(10, 100),
                     'low_stock_threshold' => rand(5, 10),
+                    'max_stock_threshold' => rand(100, 200),
                 ]);
             }
         }
