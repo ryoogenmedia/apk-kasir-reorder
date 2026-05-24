@@ -9,7 +9,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,11 +19,11 @@ class LaporanLabaRugi extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-presentation-chart-line';
+    protected static string | \UnitEnum | null $navigationGroup = 'Laporan';
     protected static ?string $title = 'Laporan Laba Rugi';
     protected static ?int $navigationSort = 1;
-    protected static string $view = 'filament.pages.laporan-page'; // We'll create a generic view
+    protected string $view = 'filament.pages.laporan-page'; // We'll create a generic view
 
     public static function canAccess(): bool
     {

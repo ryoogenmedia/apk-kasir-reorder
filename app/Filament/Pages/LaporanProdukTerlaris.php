@@ -11,18 +11,19 @@ use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Purchase;
+use App\Models\OrderItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
-class LaporanPembelian extends Page implements HasTable
+class LaporanProdukTerlaris extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-star';
     protected static string | \UnitEnum | null $navigationGroup = 'Laporan';
-    protected static ?string $title = 'Laporan Pembelian';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $title = 'Laporan Produk Terlaris';
+    protected static ?int $navigationSort = 4;
     protected string $view = 'filament.pages.laporan-page';
 
     public static function canAccess(): bool
@@ -33,19 +34,28 @@ class LaporanPembelian extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Purchase::query()->with('supplier'))
+            ->query(
+                OrderItem::query()
+                    ->select('product_id')
+                    ->selectRaw('SUM(quantity) as total_qty')
+                    ->selectRaw('SUM(order_items.price * quantity) as total_revenue')
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->groupBy('product_id')
+                    ->orderByDesc('total_qty')
+            )
             ->columns([
-                TextColumn::make('purchase_date')
-                    ->label('Tanggal')
-                    ->date()
+                TextColumn::make('product.category.name')
+                    ->label('Kategori')
                     ->sortable(),
-                TextColumn::make('supplier.name')
-                    ->label('Supplier'),
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->badge(),
-                TextColumn::make('total_amount')
-                    ->label('Total Belanja')
+                TextColumn::make('product.name')
+                    ->label('Nama Produk')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('total_qty')
+                    ->label('Total Terjual (Qty)')
+                    ->sortable(),
+                TextColumn::make('total_revenue')
+                    ->label('Total Pendapatan')
                     ->money('IDR')
                     ->sortable(),
             ])
@@ -59,11 +69,11 @@ class LaporanPembelian extends Page implements HasTable
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('purchase_date', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('orders.order_date', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('purchase_date', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('orders.order_date', '<=', $date),
                             );
                     })
             ])
@@ -74,8 +84,8 @@ class LaporanPembelian extends Page implements HasTable
                     ->color('danger')
                     ->action(function ($livewire) {
                         $records = $livewire->getFilteredTableQuery()->get();
-                        $pdf = Pdf::loadView('reports.pembelian-pdf', ['records' => $records]);
-                        return response()->streamDownload(fn () => print($pdf->output()), 'Laporan-Pembelian.pdf');
+                        $pdf = Pdf::loadView('reports.produk-terlaris-pdf', ['records' => $records]);
+                        return response()->streamDownload(fn () => print($pdf->output()), 'Laporan-Produk-Terlaris.pdf');
                     }),
                 Action::make('export_csv')
                     ->label('Cetak CSV')
@@ -85,17 +95,17 @@ class LaporanPembelian extends Page implements HasTable
                         $records = $livewire->getFilteredTableQuery()->get();
                         return response()->streamDownload(function () use ($records) {
                             $output = fopen('php://output', 'w');
-                            fputcsv($output, ['Tanggal', 'Supplier', 'Status', 'Total Belanja']);
+                            fputcsv($output, ['Kategori', 'Nama Produk', 'Total Terjual (Qty)', 'Total Pendapatan']);
                             foreach ($records as $record) {
                                 fputcsv($output, [
-                                    Carbon::parse($record->purchase_date)->format('Y-m-d'),
-                                    $record->supplier->name ?? '-',
-                                    $record->status,
-                                    $record->total_amount
+                                    $record->product->category->name ?? '-',
+                                    $record->product->name ?? '-',
+                                    $record->total_qty,
+                                    $record->total_revenue
                                 ]);
                             }
                             fclose($output);
-                        }, 'Laporan-Pembelian.csv', ['Content-Type' => 'text/csv']);
+                        }, 'Laporan-Produk-Terlaris.csv', ['Content-Type' => 'text/csv']);
                     }),
             ]);
     }

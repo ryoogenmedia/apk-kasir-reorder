@@ -16,11 +16,11 @@ class LaporanStok extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cube';
-    protected static ?string $navigationGroup = 'Laporan';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cube';
+    protected static string | \UnitEnum | null $navigationGroup = 'Laporan';
     protected static ?string $title = 'Laporan Stok & Reorder';
     protected static ?int $navigationSort = 3;
-    protected static string $view = 'filament.pages.laporan-page';
+    protected string $view = 'filament.pages.laporan-page';
 
     public static function canAccess(): bool
     {
