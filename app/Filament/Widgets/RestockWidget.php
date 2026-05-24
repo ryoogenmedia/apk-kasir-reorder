@@ -28,7 +28,7 @@ class RestockWidget extends TableWidget
         return $table
             ->query(
                 fn (): Builder => Product::query()
-                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'max_stock_threshold', 'price', 'image'])
+                    ->select(['id', 'name', 'stock', 'low_stock_threshold', 'max_stock_threshold', 'price', 'purchase_price', 'image'])
                     ->orderByRaw("CASE WHEN stock = 0 THEN 1 WHEN stock <= low_stock_threshold THEN 2 ELSE 3 END")
                     ->orderBy('name')
             )
@@ -59,10 +59,23 @@ class RestockWidget extends TableWidget
                     ->label('Stok')
                     ->view('filament.tables.columns.stock-counter')
                     ->alignment(\Filament\Support\Enums\Alignment::Center),
-                TextColumn::make('price')
-                    ->label('Harga')
-                    ->money('IDR')
+                TextInputColumn::make('purchase_price')
+                    ->label('Harga Beli')
+                    ->type('number')
+                    ->rules(['required', 'numeric', 'min:0'])
+                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
                     ->sortable(),
+                TextInputColumn::make('price')
+                    ->label('Harga Jual')
+                    ->type('number')
+                    ->rules(['required', 'numeric', 'min:0'])
+                    ->disabled(fn () => !auth()->user()->hasRole('owner'))
+                    ->sortable(),
+            ])
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name'),
             ])
             ->defaultPaginationPageOption(10)
             ->paginated([10, 25, 50])
