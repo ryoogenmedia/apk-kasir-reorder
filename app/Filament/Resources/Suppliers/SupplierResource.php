@@ -24,6 +24,11 @@ class SupplierResource extends Resource
     protected static ?string $modelLabel = 'Supplier';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Stok';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
     protected static ?string $recordTitleAttribute = 'name';

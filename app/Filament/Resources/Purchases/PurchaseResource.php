@@ -24,6 +24,11 @@ class PurchaseResource extends Resource
     protected static ?string $modelLabel = 'Pembelian';
     protected static string|UnitEnum|null $navigationGroup = 'Manajemen Stok';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'owner']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     protected static ?string $recordTitleAttribute = 'id';
